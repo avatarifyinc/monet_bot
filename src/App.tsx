@@ -3,6 +3,8 @@
 // import viteLogo from '/vite.svg'
 import './App.css'
 
+import Debug from './kit/Debug'
+
 function App() {
   // const [count, setCount] = useState(0)
 
@@ -11,6 +13,7 @@ function App() {
       <h1>monet_bot webapp</h1>
       {/* <img src={viteLogo} className="logo" alt="Vite logo" /> */}
       {/* <img src={reactLogo} className="logo react" alt="React logo" /> */}
+      <Debug />
     </>
   )
 }

@@ -9,7 +9,7 @@
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "predeploy": "tsc && vite build --base=/monet_bot",
+    "predeploy": "tsc && vite build --base=/monet_bot/",
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
