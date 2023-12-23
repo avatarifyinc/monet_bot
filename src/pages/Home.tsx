@@ -20,7 +20,11 @@ function Home() {
         <div>
           <span>- </span>
           <Link to="/edits">edits</Link>
-      </div>
+        </div>
+        <div>
+          <span>- </span>
+          <Link to="/outfit">outfit</Link>
+        </div>
       </div>
       <Debug isOpen={true} />
     </Screen>

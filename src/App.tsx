@@ -6,6 +6,7 @@ import { useExpand, WebAppProvider } from '@vkruglikov/react-telegram-web-app';
 import Home from './pages/Home'
 import Edits from './pages/Edits'
 import Settings from './pages/Settings'
+import Outfit from './pages/Outfit'
 
 import { useTheme } from './hooks/useTheme'
 
@@ -45,6 +46,12 @@ function App() {
       path: "/edits",
       element: (
         <Edits />
+      ),
+    },
+    {
+      path: "/outfit",
+      element: (
+        <Outfit />
       ),
     },
   ])
