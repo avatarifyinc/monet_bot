@@ -9,7 +9,7 @@ import Screen from '../kit/Screen'
 function Settings() {
   return (
     <Screen>
-      <h1>monet_bot webapp</h1>
+      <h1 className="">monet_bot webapp</h1>
       {/* <img src={viteLogo} className="logo" alt="Vite logo" /> */}
       {/* <img src={reactLogo} className="logo react" alt="React logo" /> */}
       <div className="py-5">
