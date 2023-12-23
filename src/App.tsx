@@ -4,6 +4,7 @@ import { createHashRouter, RouterProvider } from 'react-router-dom'
 import { useExpand, WebAppProvider } from '@vkruglikov/react-telegram-web-app';
 
 import Home from './pages/Home'
+import Edits from './pages/Edits'
 import Settings from './pages/Settings'
 
 import { useTheme } from './hooks/useTheme'
@@ -38,6 +39,12 @@ function App() {
       path: "/settings",
       element: (
         <Settings />
+      ),
+    },
+    {
+      path: "/edits",
+      element: (
+        <Edits />
       ),
     },
   ])
