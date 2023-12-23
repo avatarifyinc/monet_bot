@@ -1,20 +1,37 @@
-// import { useState } from 'react'
-// import reactLogo from './assets/react.svg'
-// import viteLogo from '/vite.svg'
+import { createHashRouter, RouterProvider } from 'react-router-dom'
+
+import Home from './pages/Home'
+import Settings from './pages/Settings'
+
 import './App.css'
 
-import Debug from './kit/Debug'
-
 function App() {
-  // const [count, setCount] = useState(0)
+  const router = createHashRouter([
+    {
+      path: "/",
+      element: (
+        <Home />
+      ),
+      errorElement: (
+        <Home />
+      ),
+    },
+    {
+      path: "*",
+      element: (
+        <Home />
+      ),
+    },
+    {
+      path: "/settings",
+      element: (
+        <Settings />
+      ),
+    },
+  ])
 
   return (
-    <>
-      <h1>monet_bot webapp</h1>
-      {/* <img src={viteLogo} className="logo" alt="Vite logo" /> */}
-      {/* <img src={reactLogo} className="logo react" alt="React logo" /> */}
-      <Debug />
-    </>
+    <RouterProvider router={router} />
   )
 }
 
