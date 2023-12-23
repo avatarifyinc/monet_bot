@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
 import Button from '../kit/Button'
+import Input from '../kit/Input'
 import Screen from '../kit/Screen'
 
 function Settings() {
@@ -66,7 +67,12 @@ function Settings() {
           ))}
         </div>
       </div>
-
+      <div className="mt-6">
+        <div className="mb-[9px] text-[17px] leading-[22px] font-semibold">Negative prompt</div>
+        <Input
+          placeholder="Prompt"
+          onChange={() => {}} />
+      </div>
       <Button
         isBottom
         text="Save"
