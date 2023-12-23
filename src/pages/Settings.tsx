@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import Button from '../kit/Button'
 import Screen from '../kit/Screen'
 
@@ -27,24 +29,51 @@ function Settings() {
     { title: '3D Model' },
     { title: 'Pixel Art' },
   ]
+
+  const [currentRatio, setCurrentRatio] = useState(ratios[0])
+  const [currentStyle, setCurrentStyle] = useState(styles[0])
   return (
     <Screen>
       <div className="flex items-center justify-between">
-        <h4 className="text-accent">Settings</h4>
+        <h4 className="">Settings</h4>
         <Button theme="text" text="Reset" onClick={() => {}}></Button>
       </div>
       <div className="mt-6">
-        <div className="text-[17px] leading-[22px]">Ratio</div>
-        {ratios.map(ratio => (
-          <Button theme="text" text={ratio.title} key={ratio.title} onClick={() => {}} />
-        ))}
+        <div className="mb-[9px] text-[17px] leading-[22px] font-semibold">Ratio</div>
+        <div className="flex flex-wrap gap-2">
+          {ratios.map(ratio => (
+            <Button
+              theme="radio"
+              text={ratio.title}
+              key={ratio.title}
+              isActive={currentRatio.title === ratio.title}
+              onClick={() => { setCurrentRatio(ratio) }}
+            />
+          ))}
+        </div>
       </div>
       <div className="mt-6">
-        <div className="text-[17px] leading-[22px]">Styles</div>
-        {styles.map(style => (
-          <Button theme="text" text={style.title} key={style.title} onClick={() => {}} />
-        ))}
+        <div className="mb-[9px] text-[17px] leading-[22px] font-semibold">Styles</div>
+        <div className="flex flex-wrap gap-2">
+          {styles.map(style => (
+            <Button
+              theme="radio"
+              text={style.title}
+              key={style.title}
+              isActive={currentStyle.title === style.title}
+              onClick={() => { setCurrentStyle(style) }}
+            />
+          ))}
+        </div>
       </div>
+
+      <Button
+        isBottom
+        text="Save"
+        onClick={() => {}}
+        // disabled={isButtonDisabled}
+        // isBusy={isBusy}
+      />
     </Screen>
   )
 }
