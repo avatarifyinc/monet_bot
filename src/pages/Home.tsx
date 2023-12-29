@@ -15,15 +15,23 @@ function Home() {
       <div className="py-5">
         <div>
           <span>- </span>
-          <Link to="/settings">settings</Link>
+          <Link to="/settings">Settings</Link>
         </div>
         <div>
           <span>- </span>
-          <Link to="/edits">edits</Link>
+          <Link to="/edits">Edits</Link>
         </div>
         <div>
           <span>- </span>
-          <Link to="/outfit">outfit</Link>
+          <Link to="/add-replace">Add&Replace</Link>
+        </div>
+        <div>
+          <span>- </span>
+          <Link to="/outfit">Outfit</Link>
+        </div>
+        <div>
+          <span>- </span>
+          <Link to="/uncrop">Uncrop</Link>
         </div>
       </div>
       <Debug isOpen={true} />

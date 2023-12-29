@@ -5,7 +5,9 @@ import { useExpand, WebAppProvider } from '@vkruglikov/react-telegram-web-app';
 
 import Home from './pages/Home'
 import Edits from './pages/Edits'
+import AddReplace from './pages/AddReplace'
 import Settings from './pages/Settings'
+import Uncrop from './pages/Uncrop'
 import Outfit from './pages/Outfit'
 
 import { useTheme } from './hooks/useTheme'
@@ -49,9 +51,21 @@ function App() {
       ),
     },
     {
+      path: "/add-replace",
+      element: (
+        <AddReplace />
+      ),
+    },
+    {
       path: "/outfit",
       element: (
         <Outfit />
+      ),
+    },
+    {
+      path: "/uncrop",
+      element: (
+        <Uncrop />
       ),
     },
   ])
