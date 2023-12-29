@@ -13,7 +13,7 @@ const Tool = ({ type, isActive, onClick }: {
   onClick?: () => void
 }) => (
   <button
-    className={cx('flex flex-col items-center', isActive && 'text-accent')}
+    className={cx('flex flex-col items-center disabled:opacity-[0.48] opacity-[0.64] hover:opacity-[0.8] active:opacity-[1] active:scale-[90%] transform-gpu transition-all', isActive && '!text-accent !opacity-[1]')}
     onClick={onClick}
   >
     {{

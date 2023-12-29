@@ -1,9 +1,12 @@
+import { useState } from 'react'
+
 import Button from '../kit/Button'
 import Screen from '../kit/Screen'
 import Tool from '../kit/Tool'
 import ToolBar from '../kit/ToolBar'
 
 function AddReplace() {
+  const [currentTool, setCurrentTool] = useState('Draw')
   return (
     <Screen>
       AddReplace soon...
@@ -14,8 +17,8 @@ function AddReplace() {
           <Tool type="Redo" onClick={() => {}} />
         </>,
         <>
-          <Tool type="Draw" onClick={() => {}} />
-          <Tool type="Erase" onClick={() => {}} />
+          <Tool type="Draw" isActive={currentTool == 'Draw'} onClick={() => { setCurrentTool('Draw') }} />
+          <Tool type="Erase" isActive={currentTool == 'Erase'} onClick={() => { setCurrentTool('Erase') }} />
         </>,
         <>
           <Tool type="Invert" onClick={() => {}} />
