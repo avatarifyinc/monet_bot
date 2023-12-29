@@ -53,7 +53,7 @@ function Button({ theme = 'default', isBottom, isActive, text, disabled, isBusy,
     <div className={cx(isBottom && 'h-[50px]')}>{/* spacer */}
       <div className={cx(isBottom ? 'fixed bottom-0 left-0 w-full px-4 py-2 bg-bg' : 'relative')}>{/* loader wrapper */}
         {isBottom && (
-          <div className="absolute bottom-full left-0 w-full h-2 bg-gradient-to-t from-bg" />
+          <div className="absolute bottom-full left-0 w-full h-2 bg-gradient-to-t from-bg border-b-[0.33px] border-[#3c3c431f]" />
         )}
         <button
           className={cx(
