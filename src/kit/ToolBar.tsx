@@ -7,7 +7,7 @@ const ToolBar = ({ groups }: { groups: ReactNode[]}) => (
         {i > 0 && (
           <div className="h-6 w-[1px] bg-[#11111114]" />
         )}
-        <div className="flex gap-4">
+        <div className="flex gap-4 items-center">
           {group}
         </div>
       </>
