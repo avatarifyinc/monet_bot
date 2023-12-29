@@ -71,7 +71,8 @@ function Settings() {
         <div className="mb-[9px] text-[17px] leading-[22px] font-semibold">Negative prompt</div>
         <Input
           placeholder="Prompt"
-          onChange={() => {}} />
+          onChange={() => {}}
+        />
       </div>
       <Button
         isBottom
