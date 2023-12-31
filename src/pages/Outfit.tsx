@@ -1,3 +1,4 @@
+import Header from '../kit/Header'
 import New from '../kit/New'
 import Screen from '../kit/Screen'
 
@@ -23,6 +24,8 @@ function Outfit() {
   ]
   return (
     <Screen>
+      <Header onBack={() => { history.back() }} />
+
       <h4 className="">Chose the style</h4>
       <div className="mt-6 grid grid-cols-3 gap-3">
         {outfits.map(outfit => (

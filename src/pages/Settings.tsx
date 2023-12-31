@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
 import Button from '../kit/Button'
+import Header from '../kit/Header'
 import Input from '../kit/Input'
 import Screen from '../kit/Screen'
 
@@ -35,6 +36,8 @@ function Settings() {
   const [currentStyle, setCurrentStyle] = useState(styles[0])
   return (
     <Screen>
+      <Header onBack={() => { history.back() }} />
+
       <div className="flex items-center justify-between">
         <h4 className="">Settings</h4>
         <Button theme="text" text="Reset" onClick={() => {}}></Button>

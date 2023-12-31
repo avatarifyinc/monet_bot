@@ -3,6 +3,7 @@ import { useState } from 'react'
 
 import Button from '../kit/Button'
 import Input from '../kit/Input'
+import Header from '../kit/Header'
 import Tool from '../kit/Tool'
 import ToolBar from '../kit/ToolBar'
 import Screen from '../kit/Screen'
@@ -17,7 +18,9 @@ function AddReplace() {
   const [animateParentRef] = useAutoAnimate()
 
   return (
-    <Screen isBottomButton className="flex flex-col">
+    <Screen isBottomButton className="flex flex-col !pt-0">
+      <Header onBack={() => { history.back() }} />
+
       <div className="flex-1 bg-[#8881] relative">
         <img className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[100%] max-h-[100%]" src={testPhoto} />
       </div>

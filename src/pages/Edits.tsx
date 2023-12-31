@@ -1,3 +1,4 @@
+import Header from '../kit/Header'
 import Screen from '../kit/Screen'
 import New from '../kit/New'
 
@@ -17,6 +18,8 @@ function Edits() {
   ]
   return (
     <Screen>
+      <Header onBack={() => { history.back() }} />
+
       <h4 className="">AI Edits</h4>
       <div className="mt-6 grid grid-cols-2 gap-3">
         {edits.map(edit => (

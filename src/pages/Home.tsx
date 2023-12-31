@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 
-import Debug from '../kit/Debug'
+import Header from '../kit/Header'
 import Screen from '../kit/Screen'
 
 // import reactLogo from './assets/react.svg'
@@ -9,6 +9,8 @@ import Screen from '../kit/Screen'
 function Home() {
   return (
     <Screen>
+      <Header onBack={() => { history.back() }} />
+
       <h1>monet_bot webapp</h1>
       {/* <img src={viteLogo} className="logo" alt="Vite logo" /> */}
       {/* <img src={reactLogo} className="logo react" alt="React logo" /> */}
@@ -34,7 +36,6 @@ function Home() {
           <Link to="/uncrop">Uncrop</Link>
         </div>
       </div>
-      <Debug isOpen={true} />
     </Screen>
   )
 }
