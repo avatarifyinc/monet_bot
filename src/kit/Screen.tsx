@@ -3,15 +3,18 @@ import { ReactNode } from 'react'
 
 import Debug from './Debug'
 
-type TScreen = {
+function Screen({ children, className, isBottomButton }: {
   children: ReactNode,
   className?: string
-}
-
-function Screen({ children, className }: TScreen) {
+  isBottomButton?: boolean
+}) {
   return (
-    <div className={cx('fixed top-0 left-0 w-full h-full overflow-y-auto p-4 text-text bg-bg', className)}>
-      <div className="limiter">
+    <div className={cx('fixed top-0 left-0 w-full h-full overflow-y-auto text-text bg-bg')}>
+      <div className={cx(
+        'limiter mx-auto max-w-[1000px] min-h-full p-4',
+        isBottomButton && 'pb-[82px]',
+        className,
+      )}>
         {children}
         <Debug />
       </div>

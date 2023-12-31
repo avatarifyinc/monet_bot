@@ -18,7 +18,7 @@ function Debug({ isOpen }: {isOpen?: boolean}) {
   }, [listener])
 
   return (
-    <div className={cx((!isOpen && n < OPEN_DEBUG_RIGHT_CLICKS) && 'h-0 overflow-hidden')}>
+    <div className={cx('Debug', (!isOpen && n < OPEN_DEBUG_RIGHT_CLICKS) && 'h-0 overflow-hidden')}>
       <div>
         <div className="mt-10 text-[12px] break-words overflow-x-auto">
           <h2>Debug</h2>
