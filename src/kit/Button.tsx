@@ -3,6 +3,7 @@ import { MainButton, useHapticFeedback, useWebApp } from '@vkruglikov/react-tele
 
 // import { useSplash } from '../hooks'
 import Loader from './Loader'
+import Limiter from './Limiter'
 
 type TButton = {
   text: string,
@@ -49,23 +50,31 @@ function Button({ theme = 'default', isBottom, isActive, text, disabled, isBusy,
     'radio': `h-8 rounded-full border border-accent px-3 py-[6px] text-[15px] leading-[20px] font-semibold enabled:hover:brightness-[1.2] enabled:active:brightness-[1.4] transition-all ${!isActive ? 'text-accent' : 'bg-accent text-white'}`,
   }[theme]
 
+  const button = (
+    <button
+      className={cx(
+        themeStyle,
+        isBottom && '!h-[50px]',
+        'disabled:opacity-40 disabled:cursor-not-allowed'
+      )}
+      disabled={disabled || isBusy}
+      onClick={onClickVibro}
+    >
+      {text}
+    </button>
+  )
+
   return (
     <div className={cx(isBottom && '?h-[50px]')}>{/* spacer */}
-      <div className={cx(isBottom ? 'fixed bottom-0 left-0 w-full px-4 py-2 bg-bg' : 'relative')}>{/* loader wrapper */}
+      <div className={cx(isBottom ? 'fixed bottom-0 left-0 w-full py-2 bg-bg' : 'relative')}>{/* loader wrapper */}
         {isBottom && (
           <div className="absolute bottom-full left-0 w-full h-2 bg-gradient-to-t from-bg border-b-[0.33px] border-[#3c3c431f]" />
         )}
-        <button
-          className={cx(
-            themeStyle,
-            isBottom && '!h-[50px]',
-            'disabled:opacity-40 disabled:cursor-not-allowed'
-          )}
-          disabled={disabled || isBusy}
-          onClick={onClickVibro}
-        >
-          {text}
-        </button>
+        {isBottom ? (
+          <Limiter className="px-4">
+            {button}
+          </Limiter>
+        ) : button}
         {isBusy && <Loader size={30} />}
       </div>
     </div>
