@@ -40,13 +40,13 @@ function AddReplace() {
 
         <div ref={animateParentRef} className="relative overflow-hidden">
           {currentTool == 'Draw' && (
-            <div className="mt-4 flex gap-3">
+            <div className="mt-4 flex gap-3 overflow-hidden">
               <Input
                 placeholder="Prompt, e.g. darth vader"
                 onChange={() => {}}
               />
               <button
-                className="w-[44px] h-[44px] flex items-center justify-center text-accent"
+                className="w-[44px] h-[44px] flex items-center justify-center text-accent enabled:hover:brightness-[1.2] enabled:active:brightness-[1.4] enabled:active:scale-[90%] transition-all"
                 onClick={() => { setSettingsOpen(true) }}
               >
                 <IconSettings />
