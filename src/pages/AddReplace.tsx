@@ -1,3 +1,4 @@
+import { useAutoAnimate } from '@formkit/auto-animate/react'
 import { useState } from 'react'
 
 import Button from '../kit/Button'
@@ -13,6 +14,7 @@ import { ReactComponent as IconSettings } from '../assets/settings.svg'
 function AddReplace() {
   const [currentTool, setCurrentTool] = useState('Draw')
   const [isSettingsOpen, setSettingsOpen] = useState(false)
+  const [animateParentRef] = useAutoAnimate()
 
   return (
     <Screen isBottomButton className="flex flex-col">
@@ -36,17 +38,21 @@ function AddReplace() {
           </>
         ]} />
 
-        <div className="mt-4 flex gap-3">
-          <Input
-            placeholder="Prompt, e.g. darth vader"
-            onChange={() => {}}
-          />
-          <button
-            className="w-[44px] h-[44px] flex items-center justify-center text-accent"
-            onClick={() => { setSettingsOpen(true) }}
-          >
-            <IconSettings />
-          </button>
+        <div ref={animateParentRef} className="relative overflow-hidden">
+          {currentTool == 'Draw' && (
+            <div className="mt-4 flex gap-3">
+              <Input
+                placeholder="Prompt, e.g. darth vader"
+                onChange={() => {}}
+              />
+              <button
+                className="w-[44px] h-[44px] flex items-center justify-center text-accent"
+                onClick={() => { setSettingsOpen(true) }}
+              >
+                <IconSettings />
+              </button>
+            </div>
+          )}
         </div>
 
         {isSettingsOpen && (
