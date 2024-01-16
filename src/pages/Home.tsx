@@ -29,6 +29,10 @@ function Home() {
         </div>
         <div>
           <span>- </span>
+          <Link to="/erase">Erase</Link>
+        </div>
+        <div>
+          <span>- </span>
           <Link to="/outfit">Outfit</Link>
         </div>
         <div>

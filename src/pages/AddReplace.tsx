@@ -12,7 +12,7 @@ import testPhoto from '../assets/test-photo.jpg'
 
 import { ReactComponent as IconSettings } from '../assets/settings.svg'
 
-function AddReplace() {
+function AddReplace({ mode } : { mode?: 'ERASE'}) {
   const [currentTool, setCurrentTool] = useState('Draw')
   const [isSettingsOpen, setSettingsOpen] = useState(false)
   const [animateParentRef] = useAutoAnimate()
@@ -21,7 +21,7 @@ function AddReplace() {
     <Screen isBottomButton className="flex flex-col !pt-0">
       <Header onBack={() => { history.back() }} />
 
-      <div className="flex-1 bg-[#8881] relative">
+      <div className="flex-1 bg-[#8881] relative select-none">
         <img className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[100%] max-h-[100%]" src={testPhoto} />
       </div>
 
@@ -42,7 +42,7 @@ function AddReplace() {
         ]} />
 
         <div ref={animateParentRef} className="relative overflow-hidden">
-          {currentTool == 'Draw' && (
+          {mode !== 'ERASE' && (
             <div className="mt-4 flex gap-3 overflow-hidden">
               <Input
                 placeholder="Prompt, e.g. darth vader"
@@ -65,7 +65,7 @@ function AddReplace() {
 
     <Button
       isBottom
-      text={currentTool === 'Erase' ? 'Erase' : 'Generate'}
+      text={mode === 'ERASE' ? 'Erase' : 'Generate'}
       onClick={() => {}}
       // disabled={isButtonDisabled}
       // isBusy={isBusy}

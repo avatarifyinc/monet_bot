@@ -50,6 +50,12 @@ function App() {
       ),
     },
     {
+      path: "/erase",
+      element: (
+        <AddReplace mode="ERASE" />
+      ),
+    },
+    {
       path: "/outfit",
       element: (
         <Outfit />

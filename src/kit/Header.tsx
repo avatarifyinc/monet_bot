@@ -13,11 +13,9 @@ function Header({ onBack, onCancel }: THeader) {
   // @ts-ignore
   if (window?.Telegram?.WebApp?.platform && window?.Telegram?.WebApp?.platform !== 'unknown') {
     return (
-      <div className="h-3">
-        <BackButton
-          onClick={onBack}
-        />
-      </div>
+      <BackButton
+        onClick={onBack}
+      />
     )
   }
 
