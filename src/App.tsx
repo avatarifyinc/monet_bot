@@ -1,7 +1,5 @@
-import cx from 'classnames'
-import { useEffect } from 'react'
 import { createHashRouter, RouterProvider } from 'react-router-dom'
-import { useExpand, WebAppProvider } from '@vkruglikov/react-telegram-web-app';
+import { WebAppProvider } from '@vkruglikov/react-telegram-web-app';
 
 import Home from './pages/Home'
 import Edits from './pages/Edits'
@@ -10,17 +8,12 @@ import Settings from './pages/Settings'
 import Uncrop from './pages/Uncrop'
 import Outfit from './pages/Outfit'
 
+import { useAutoExpand } from './hooks/useAutoExpand'
 import { useTheme } from './hooks/useTheme'
 
 function App() {
-  const { isDarkTheme } = useTheme()
-
-  const [isExpanded, expand] = useExpand()
-  useEffect(() => {
-    if (!isExpanded) {
-      expand()
-    }
-  }, [])
+  useAutoExpand()
+  useTheme()
 
   const router = createHashRouter([
     {
@@ -71,14 +64,8 @@ function App() {
   ])
 
   return (
-    <WebAppProvider
-      options={{
-        smoothButtonsTransition: true
-      }}
-    >
-      <div className={cx(isDarkTheme ? 'theme-dark dark' : 'theme-light')}>
-        <RouterProvider router={router} />
-      </div>
+    <WebAppProvider options={{ smoothButtonsTransition: true }}>
+      <RouterProvider router={router} />
     </WebAppProvider>
   )
 }
