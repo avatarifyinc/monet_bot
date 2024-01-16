@@ -1,6 +1,9 @@
 import { useAutoAnimate } from '@formkit/auto-animate/react'
 import { useState } from 'react'
 
+import { BottomSheet } from 'react-spring-bottom-sheet'
+import 'react-spring-bottom-sheet/dist/style.css'
+
 import Button from '../kit/Button'
 import Input from '../kit/Input'
 import Header from '../kit/Header'
@@ -58,9 +61,17 @@ function AddReplace({ mode } : { mode?: 'ERASE'}) {
           )}
         </div>
 
-        {isSettingsOpen && (
+        <BottomSheet
+          open={isSettingsOpen}
+          onDismiss={() => { setSettingsOpen(false) }}
+        >
           <div>Settings soon...</div>
-        )}
+          <div>Settings soon...</div>
+          <div>Settings soon...</div>
+          <div>Settings soon...</div>
+          <div>Settings soon...</div>
+          <div>Settings soon...</div>
+        </BottomSheet>
       </div>
 
     <Button

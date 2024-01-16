@@ -19,6 +19,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.21.1",
+    "react-spring-bottom-sheet": "^3.5.0-alpha.0",
     "tw-colors": "^1.2.6",
     "vite-plugin-checker": "^0.6.2",
     "vite-plugin-svgr": "^3.2.0"
