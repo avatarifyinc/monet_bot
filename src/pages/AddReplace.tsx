@@ -7,6 +7,7 @@ import 'react-spring-bottom-sheet/dist/style.css'
 import Button from '../kit/Button'
 import Input from '../kit/Input'
 import Header from '../kit/Header'
+import HelpButton from '../kit/HelpButton'
 import Tool from '../kit/Tool'
 import ToolBar from '../kit/ToolBar'
 import Screen from '../kit/Screen'
@@ -19,10 +20,6 @@ function AddReplace({ mode } : { mode?: 'ERASE'}) {
   const [currentTool, setCurrentTool] = useState('Draw')
   const [isSettingsOpen, setSettingsOpen] = useState(true)
   const [animateParentRef] = useAutoAnimate()
-
-  const HelpButton = () => (
-    <div className="w-6 h-6 bg-black" />
-  )
 
   return (
     <Screen isBottomButton className="flex flex-col !pt-0">
