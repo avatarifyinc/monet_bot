@@ -69,7 +69,7 @@ function Button({ theme = 'default', isBottom, isActive, text, disabled, isBusy,
   )
 
   return (
-    <div className={cx(isBottom && 'ButtonSpacer ?h-[50px]')}>
+    // <div className={cx(isBottom && 'ButtonSpacer h-[66px]')}>
       <div className={cx('ButtonLoaderWrapper', isBottom ? 'fixed bottom-0 left-0 w-full py-2 bg-bg' : 'relative')}>
         {isBottom && (
           <div className="absolute bottom-full left-0 w-full h-2 bg-gradient-to-t from-bg border-b-[0.33px] border-[#3c3c431f]" />
@@ -84,7 +84,7 @@ function Button({ theme = 'default', isBottom, isActive, text, disabled, isBusy,
         }
         {isBusy && <Loader size={30} />}
       </div>
-    </div>
+    // </div>
   )
 }
 

@@ -35,7 +35,7 @@ function Settings() {
   const [currentRatio, setCurrentRatio] = useState(ratios[0])
   const [currentStyle, setCurrentStyle] = useState(styles[0])
   return (
-    <Screen>
+    <Screen isBottomButton>
       <Header onBack={() => { history.back() }} />
 
       <div className="flex items-center justify-between">

@@ -15,30 +15,21 @@ function Home() {
       {/* <img src={viteLogo} className="logo" alt="Vite logo" /> */}
       {/* <img src={reactLogo} className="logo react" alt="React logo" /> */}
       <div className="py-5">
-        <div>
-          <span>- </span>
-          <Link to="/settings">Settings</Link>
-        </div>
-        <div>
-          <span>- </span>
-          <Link to="/edits">Edits</Link>
-        </div>
-        <div>
-          <span>- </span>
-          <Link to="/add-replace">Add&Replace</Link>
-        </div>
-        <div>
-          <span>- </span>
-          <Link to="/erase">Erase</Link>
-        </div>
-        <div>
-          <span>- </span>
-          <Link to="/outfit">Outfit</Link>
-        </div>
-        <div>
-          <span>- </span>
-          <Link to="/uncrop">Uncrop</Link>
-        </div>
+        {
+          [
+            ['/settings', 'Settings'],
+            ['/edits', 'Edits'],
+            ['/add-replace', 'Add&Replace'],
+            ['/erase', 'Erase'],
+            ['/outfit', 'Outfit'],
+            ['/uncrop', 'Uncrop'],
+          ].map(link => (
+            <div>
+              <span>- </span>
+              <Link to={link[0]} className="text-accent">{link[1]}</Link>
+            </div>
+          ))
+        }
       </div>
     </Screen>
   )
