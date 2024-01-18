@@ -17,8 +17,12 @@ import { ReactComponent as IconSettings } from '../assets/settings.svg'
 
 function AddReplace({ mode } : { mode?: 'ERASE'}) {
   const [currentTool, setCurrentTool] = useState('Draw')
-  const [isSettingsOpen, setSettingsOpen] = useState(false)
+  const [isSettingsOpen, setSettingsOpen] = useState(true)
   const [animateParentRef] = useAutoAnimate()
+
+  const HelpButton = () => (
+    <div className="w-6 h-6 bg-black" />
+  )
 
   return (
     <Screen isBottomButton className="flex flex-col !pt-0">
@@ -65,12 +69,55 @@ function AddReplace({ mode } : { mode?: 'ERASE'}) {
           open={isSettingsOpen}
           onDismiss={() => { setSettingsOpen(false) }}
         >
-          <div>Settings soon...</div>
-          <div>Settings soon...</div>
-          <div>Settings soon...</div>
-          <div>Settings soon...</div>
-          <div>Settings soon...</div>
-          <div>Settings soon...</div>
+          <div className="px-4 pb-5">
+            <div className="flex flex-col gap-5">
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1">
+                    <h3 className="text-[17px] font-semibold leading-[22px] tracking-[-0.5px]">Image strength</h3>
+                    <HelpButton />
+                  </div>
+                  <div className="text-[15px] font-semibold leading-[20px] tracking-[-0.24px] text-accent">4</div>
+                </div>
+                <div className="bg-black h-[22px]"></div>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center justify-start gap-1">
+                  <h3 className="text-[17px] font-semibold leading-[22px] tracking-[-0.5px]">Negative prompt</h3>
+                  <HelpButton />
+                </div>
+                <Input
+                  placeholder="For example, black background"
+                  onChange={() => { }}
+                />
+              </div>
+
+              <div className="flex items-center justify-start gap-4">
+                <div className="bg-black h-[32px] w-[56px]" />
+                <div className="flex items-center justify-start gap-1">
+                  <h3 className="text-[17px] font-semibold leading-[22px] tracking-[-0.5px]">Forse insert</h3>
+                  <HelpButton />
+                </div>
+              </div>
+            </div>
+            <div className="mt-8 flex items-center gap-4">
+              <div className="flex-1">
+                <Button
+                  theme="primary"
+                  text="Save"
+                  onClick={() => { setSettingsOpen(false) }}
+                />
+              </div>
+              <div className="flex-1">
+                <Button
+                  theme="secondary"
+                  text="Reset"
+                  onClick={() => { setSettingsOpen(false) }}
+                />
+              </div>
+            </div>
+          </div>
         </BottomSheet>
       </div>
 
