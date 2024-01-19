@@ -9,6 +9,7 @@ import Input from '../kit/Input'
 import Header from '../kit/Header'
 import HelpButton from '../kit/HelpButton'
 import Range from '../kit/Range'
+import Toggle from '../kit/Toggle'
 import Tool from '../kit/Tool'
 import ToolBar from '../kit/ToolBar'
 import Screen from '../kit/Screen'
@@ -21,6 +22,7 @@ function AddReplace({ mode } : { mode?: 'ERASE'}) {
   const [currentTool, setCurrentTool] = useState('Draw')
   const [isSettingsOpen, setSettingsOpen] = useState(true)
   const [strength, setStrength] = useState(4)
+  const [isForceInsert, setIsForceInsert] = useState(true)
   const [animateParentRef] = useAutoAnimate()
 
   return (
@@ -98,7 +100,10 @@ function AddReplace({ mode } : { mode?: 'ERASE'}) {
               </div>
 
               <div className="flex items-center justify-start gap-4">
-                <div className="bg-black h-[32px] w-[56px]" />
+                <Toggle
+                  checked={isForceInsert}
+                  onChange={setIsForceInsert}
+                />
                 <div className="flex items-center justify-start gap-1">
                   <h3 className="text-[17px] font-semibold leading-[22px] tracking-[-0.5px]">Forse insert</h3>
                   <HelpButton />
