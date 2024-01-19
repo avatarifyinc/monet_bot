@@ -99,7 +99,7 @@ function AddReplace({ mode } : { mode?: 'ERASE'}) {
                 />
               </div>
 
-              <div className="flex items-center justify-start gap-4">
+              <div className="flex items-center justify-start gap-3">
                 <Toggle
                   checked={isForceInsert}
                   onChange={setIsForceInsert}

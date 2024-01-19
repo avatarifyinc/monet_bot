@@ -49,9 +49,9 @@ function Button({ theme = 'default', isBottom, isActive, text, disabled, isBusy,
 
     'radio': `h-8 rounded-full border border-accent px-3 py-[6px] text-[15px] leading-[20px] font-semibold enabled:hover:brightness-[1.2] enabled:active:brightness-[1.4] transition-all ${!isActive ? 'text-accent' : 'bg-accent text-white'}`,
 
-    'primary': `w-full h-[44px]`,
+    'primary': `w-full h-[44px] bg-accent rounded-[12px] text-white text-[17px] font-semibold tracking-[-0.5px] enabled:hover:brightness-[1.2] enabled:active:brightness-[1.4] transition-all`,
 
-    'secondary': `w-full h-[44px]`,
+    'secondary': `w-full h-[44px] bg-white rounded-[12px] border-accent border-[2px] text-accent text-[17px] font-semibold tracking-[-0.5px] enabled:hover:brightness-[1.2] enabled:active:brightness-[1.4] transition-all`,
   }[theme]
 
   const button = (
