@@ -8,6 +8,7 @@ import Button from '../kit/Button'
 import Input from '../kit/Input'
 import Header from '../kit/Header'
 import HelpButton from '../kit/HelpButton'
+import Range from '../kit/Range'
 import Tool from '../kit/Tool'
 import ToolBar from '../kit/ToolBar'
 import Screen from '../kit/Screen'
@@ -19,6 +20,7 @@ import { ReactComponent as IconSettings } from '../assets/settings.svg'
 function AddReplace({ mode } : { mode?: 'ERASE'}) {
   const [currentTool, setCurrentTool] = useState('Draw')
   const [isSettingsOpen, setSettingsOpen] = useState(true)
+  const [strength, setStrength] = useState(4)
   const [animateParentRef] = useAutoAnimate()
 
   return (
@@ -74,9 +76,14 @@ function AddReplace({ mode } : { mode?: 'ERASE'}) {
                     <h3 className="text-[17px] font-semibold leading-[22px] tracking-[-0.5px]">Image strength</h3>
                     <HelpButton />
                   </div>
-                  <div className="text-[15px] font-semibold leading-[20px] tracking-[-0.24px] text-accent">4</div>
+                  <div className="text-[15px] font-semibold leading-[20px] tracking-[-0.24px] text-accent">{strength}</div>
                 </div>
-                <div className="bg-black h-[22px]"></div>
+                <Range
+                  min={1}
+                  max={10}
+                  value={strength}
+                  onInput={setStrength}
+                />
               </div>
 
               <div className="flex flex-col gap-2">

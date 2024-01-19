@@ -1,0 +1,27 @@
+.range-slider {
+  height: 4px;
+  background: #1C1C1D29;
+}
+.theme-dark .range-slider {
+  background: #FFFFFF29;
+}
+.range-slider .range-slider__thumb {
+  width: 20px;
+  height: 20px;
+  background: #007AFF;
+  transition: left 0.2s ease;
+}
+.theme-dark .range-slider__thumb {
+  background: #3E88F7;
+}
+.range-slider .range-slider__thumb[data-lower] {
+  width: 0;
+}
+.range-slider .range-slider__range {
+  border-radius: 2px;
+  background: #007AFF;
+  transition: width 0.2s ease;
+}
+.theme-dark .range-slider__range {
+  background: #3E88F7;
+}
