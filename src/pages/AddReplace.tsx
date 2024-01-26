@@ -151,7 +151,7 @@ function AddReplace({ mode } : { mode?: 'ERASE'}) {
 
     <Button
       isBottom
-      text={mode === 'ERASE' ? 'Erase' : 'Generate'}
+      text={mode === 'ERASE' ? 'Remove' : 'Generate'}
       onClick={() => {}}
       // disabled={isButtonDisabled}
       // isBusy={isBusy}

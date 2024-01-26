@@ -2,6 +2,7 @@ import { useState } from 'react'
 
 import Button from '../kit/Button'
 import Header from '../kit/Header'
+import HelpButton from '../kit/HelpButton'
 import Input from '../kit/Input'
 import Screen from '../kit/Screen'
 
@@ -71,7 +72,10 @@ function Settings() {
         </div>
       </div>
       <div className="mt-6">
-        <div className="mb-[9px] text-[17px] leading-[22px] font-semibold">Negative prompt</div>
+        <div className="mb-[9px] flex items-center justify-start gap-1">
+          <div className="text-[17px] leading-[22px] font-semibold">Negative prompt</div>
+          <HelpButton />
+        </div>
         <Input
           placeholder="Prompt"
           value=""
