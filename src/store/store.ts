@@ -1,16 +1,17 @@
 import { create } from 'zustand'
 
-import { STYLES, RATIOS } from '../const'
+import { STYLES_TITLED, RATIOS_TITLED } from '../const'
 import { TSettings } from '../types'
 
 type TStore = {
   settings: undefined | TSettings
   setSettings: (settings: TSettings) => void
+  resetSettings: () => void
 }
 
 const DEFAULT_SETTINGS: TSettings = {
-  style: STYLES[0],
-  aspect_ratio: RATIOS[0],
+  style: STYLES_TITLED[0].value,
+  aspect_ratio: RATIOS_TITLED[0].value,
   negative_prompt: ''
 }
 

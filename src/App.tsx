@@ -1,10 +1,14 @@
-import { RouterProvider } from 'react-router-dom'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { WebAppProvider } from '@vkruglikov/react-telegram-web-app';
+
+import { RouterProvider } from 'react-router-dom'
 
 import { useAutoExpand } from './hooks/useAutoExpand'
 import { useTheme } from './hooks/useTheme'
 
 import { router } from './router'
+
+const queryClient = new QueryClient()
 
 function App() {
   useAutoExpand()
@@ -12,7 +16,9 @@ function App() {
 
   return (
     <WebAppProvider options={{ smoothButtonsTransition: true }}>
-      <RouterProvider router={router} />
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>
     </WebAppProvider>
   )
 }

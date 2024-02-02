@@ -4,6 +4,8 @@ import { useQuery } from '@tanstack/react-query'
 import { useStore } from '../store'
 import { TSettings } from '../types'
 
+import { mockSettings } from './mock'
+
 const apiUrl = import.meta.env.VITE_API_URL
 const staleTime = 5 * 60 * 1000
 
@@ -15,18 +17,20 @@ const handleJsonResponse = (res: any) => {
 }
 
 export const useSettingsQuery = () => {
-  const [, initData] = useInitData();
+  const [, initData] = useInitData()
   const { setSettings } = useStore()
+
   return (
     useQuery<TSettings, Error>({
       queryKey: ['settings'],
-      queryFn: (() =>
-        fetch(`${apiUrl}/settings`, {
-          headers: {
-            'X-TG-INIT-DATA': initData || '',
-          }
-        }).then(handleJsonResponse)
-      ),
+      queryFn: !!'MOCK'
+        ? () => mockSettings
+        : () =>
+          fetch(`${apiUrl}/settings`, {
+            headers: {
+              'X-TG-INIT-DATA': initData || '',
+            }
+          }).then(handleJsonResponse),
       onSuccess: (data) => {
         console.log('useApi: settings', data)
         setSettings(data)

@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useSettingsQuery } from '../api'
+import { useStore } from '../store'
 
 import Button from '../kit/Button'
 import Header from '../kit/Header'
@@ -6,53 +7,47 @@ import HelpButton from '../kit/HelpButton'
 import Input from '../kit/Input'
 import Screen from '../kit/Screen'
 
-function Settings() {
-  const ratios = [
-    { title: 'Widescreen • 16:9' },
-    { title: 'Vertical • 9:16' },
-    { title: 'Square • 1:1' },
-    { title: 'Photo • 4:3' },
-    { title: 'Portrait • 4:5' },
-    { title: 'Landscape • 3:2' },
-    { title: 'Cinematic • 21:9' },
-  ]
-  const styles = [
-    { title: 'No style' },
-    { title: 'Photographic' },
-    { title: 'Digital art' },
-    { title: 'Comic Book' },
-    { title: 'Fantasy Art' },
-    { title: 'Analog Film' },
-    { title: 'Neon Punk' },
-    { title: 'Isometric' },
-    { title: 'Low Poly' },
-    { title: 'Origami' },
-    { title: 'Line Art' },
-    { title: 'Cinematic' },
-    { title: '3D Model' },
-    { title: 'Pixel Art' },
-  ]
+import { RATIOS_TITLED, STYLES_TITLED } from '../const'
 
-  const [currentRatio, setCurrentRatio] = useState(ratios[0])
-  const [currentStyle, setCurrentStyle] = useState(styles[0])
+function Settings() {
+  const { settings, setSettings, resetSettings } = useStore()
+  const {
+    isLoading: isSettingsLoading,
+    error: settingsError,
+    // data: settings
+  } = useSettingsQuery()
+
+  if (!settings || isSettingsLoading || settingsError) {
+    return null // todo loader | handle error
+  }
+
   return (
     <Screen isBottomButton>
       <Header onBack={() => { history.back() }} />
 
       <div className="flex items-center justify-between">
         <h4 className="">Settings</h4>
-        <Button theme="text" text="Reset" onClick={() => {}}></Button>
+        <Button
+          theme="text"
+          text="Reset"
+          onClick={resetSettings}
+        />
       </div>
       <div className="mt-6">
         <div className="mb-[9px] text-[17px] leading-[22px] font-semibold">Ratio</div>
         <div className="flex flex-wrap gap-2">
-          {ratios.map(ratio => (
+          {RATIOS_TITLED.map(ratio => (
             <Button
               theme="radio"
               text={ratio.title}
               key={ratio.title}
-              isActive={currentRatio.title === ratio.title}
-              onClick={() => { setCurrentRatio(ratio) }}
+              isActive={JSON.stringify(settings.aspect_ratio) === JSON.stringify(ratio.value)}
+              onClick={() => {
+                setSettings({
+                  ...settings,
+                  aspect_ratio: ratio.value,
+                })
+              }}
             />
           ))}
         </div>
@@ -60,13 +55,18 @@ function Settings() {
       <div className="mt-6">
         <div className="mb-[9px] text-[17px] leading-[22px] font-semibold">Styles</div>
         <div className="flex flex-wrap gap-2">
-          {styles.map(style => (
+          {STYLES_TITLED.map(style => (
             <Button
               theme="radio"
               text={style.title}
               key={style.title}
-              isActive={currentStyle.title === style.title}
-              onClick={() => { setCurrentStyle(style) }}
+              isActive={settings.style === style.value}
+              onClick={() => {
+                setSettings({
+                  ...settings,
+                  style: style.value,
+                })
+              }}
             />
           ))}
         </div>
@@ -78,8 +78,13 @@ function Settings() {
         </div>
         <Input
           placeholder="Prompt"
-          value=""
-          onChange={() => {}}
+          value={settings.negative_prompt}
+          onChange={newValue => {
+            setSettings({
+              ...settings,
+              negative_prompt: newValue,
+            })
+          }}
         />
       </div>
       <Button
