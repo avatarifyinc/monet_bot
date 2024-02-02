@@ -16,14 +16,14 @@ const handleJsonResponse = (res: any) => {
   return res.json()
 }
 
-export const useSettingsQuery = () => {
+export const useGetSettings = () => {
   const [, initData] = useInitData()
   const { setSettings } = useStore()
 
   return (
     useQuery<TSettings, Error>({
       queryKey: ['settings'],
-      queryFn: !!'MOCK'
+      queryFn: (!initData /*!!'MOCK'*/)
         ? () => mockSettings
         : () =>
           fetch(`${apiUrl}/settings`, {
@@ -38,4 +38,22 @@ export const useSettingsQuery = () => {
       staleTime
     })
   )
+}
+
+export const usePostSettings = () => {
+  const [, initData] = useInitData()
+  const { settings } = useStore()
+  const url = !initData
+    ? 'https://jsonplaceholder.typicode.com/posts'
+    : `${apiUrl}/settings`
+
+  return () =>
+    fetch(url, {
+      method: 'POST',
+      body: JSON.stringify(settings),
+      headers: {
+        'Content-type': 'application/json',
+        'X-TG-INIT-DATA': initData || '',
+      },
+    }).then(handleJsonResponse)
 }

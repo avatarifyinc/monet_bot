@@ -1,4 +1,6 @@
-import { useSettingsQuery } from '../api'
+import { useState } from 'react'
+
+import { useGetSettings, usePostSettings } from '../api'
 import { useStore } from '../store'
 
 import Button from '../kit/Button'
@@ -15,10 +17,30 @@ function Settings() {
     isLoading: isSettingsLoading,
     error: settingsError,
     // data: settings
-  } = useSettingsQuery()
+  } = useGetSettings()
+  const postSettings = usePostSettings()
+  const [isBusy, setIsBusy] = useState(false)
 
   if (!settings || isSettingsLoading || settingsError) {
     return null // todo loader | handle error
+  }
+
+  const save = async () => {
+    setIsBusy(true)
+    try {
+      const resJson = await postSettings()
+      // todo: maybe not 200
+      console.log('post res json', resJson)
+      // setSuccess(true)
+      // setTimeout(() => {
+      //  window.Telegram?.WebApp.close()
+      // }, 2300)
+    } catch (e) {
+      // setSuccess(false)
+      // setPostSettingsError(e as Error)
+    } finally {
+      setIsBusy(false)
+    }
   }
 
   return (
@@ -90,9 +112,9 @@ function Settings() {
       <Button
         isBottom
         text="Save"
-        onClick={() => {}}
+        onClick={save}
         // disabled={isButtonDisabled}
-        // isBusy={isBusy}
+        isBusy={isBusy}
       />
     </Screen>
   )
