@@ -10,6 +10,7 @@ import Input from '../kit/Input'
 import Screen from '../kit/Screen'
 
 import { RATIOS_TITLED, STYLES_TITLED } from '../const'
+import { closeApp } from '../utils'
 
 function Settings() {
   const { settings, setSettings, resetSettings } = useStore()
@@ -35,6 +36,7 @@ function Settings() {
       // setTimeout(() => {
       //  window.Telegram?.WebApp.close()
       // }, 2300)
+      closeApp()
     } catch (e) {
       // setSuccess(false)
       // setPostSettingsError(e as Error)
@@ -45,7 +47,7 @@ function Settings() {
 
   return (
     <Screen isBottomButton>
-      <Header onBack={() => { history.back() }} />
+      <Header onBack={() => { closeApp() }} />
 
       <div className="flex items-center justify-between">
         <h4 className="">Settings</h4>
