@@ -1,3 +1,4 @@
+import { useHapticFeedback } from '@vkruglikov/react-telegram-web-app'
 import { useState } from 'react'
 
 import { useGetSettings, usePostSettings } from '../api'
@@ -13,6 +14,7 @@ import { RATIOS_TITLED, STYLES_TITLED } from '../const'
 import { closeApp } from '../utils'
 
 function Settings() {
+  const [, notificationOccurred] = useHapticFeedback()
   const { settings, setSettings, resetSettings } = useStore()
   const {
     isLoading: isSettingsLoading,
@@ -33,10 +35,11 @@ function Settings() {
       // todo: maybe not 200
       console.log('post res json', resJson)
       // setSuccess(true)
-      // setTimeout(() => {
-      //  window.Telegram?.WebApp.close()
-      // }, 2300)
-      closeApp()
+      notificationOccurred('success')
+      setTimeout(() => {
+        // window.Telegram?.WebApp.close()
+        closeApp()
+      }, 100)
     } catch (e) {
       // setSuccess(false)
       // setPostSettingsError(e as Error)
