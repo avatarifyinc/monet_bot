@@ -6,9 +6,17 @@ function Debug({ isOpen }: {isOpen?: boolean}) {
 
   const [n, setN] = useState(0)
 
+  const isTouchDevice = () =>
+    (('ontouchstart' in window) ||
+    (navigator.maxTouchPoints > 0) ||
+    // @ts-ignore
+    (navigator.msMaxTouchPoints > 0))
+
   const listener = useCallback(() => {
-    setN(n + 1)
-  }, [n, setN])
+    if (!isTouchDevice()) {
+      setN(n + 1)
+    }
+  }, [n, setN, isTouchDevice])
 
   useEffect(() => {
     window.addEventListener('contextmenu', listener)
@@ -22,9 +30,7 @@ function Debug({ isOpen }: {isOpen?: boolean}) {
       <div>
         <div className="mt-10 text-[12px] break-words overflow-x-auto">
           <h2>Debug</h2>
-          <strong>window.Telegram.Webapp = </strong>
-          {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-          {/* @ts-ignore */}
+          <strong>window.Telegram.WebApp = </strong>
           <pre>{JSON.stringify(window.Telegram?.WebApp, null, 2)}</pre>
         </div>
       </div>
