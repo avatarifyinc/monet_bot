@@ -1,35 +1,38 @@
-import { Link } from 'react-router-dom'
-
 import Header from '../kit/Header'
 import Screen from '../kit/Screen'
+import New from '../kit/New'
 
-// import reactLogo from './assets/react.svg'
-// import viteLogo from '/vite.svg
+import editAddreplace from '../assets/edit-addreplace.jpg'
+import editOutfits from '../assets/edit-outfits.jpg'
+import editUpscale from '../assets/edit-upscale.jpg'
+import editEraser from '../assets/edit-eraser.jpg'
+import editUncrop from '../assets/edit-uncrop.jpg'
 
 function Home() {
+  const edits = [
+    { title: 'Add&Replace', img: editAddreplace, path: '/add-replace' },
+    { title: 'AI Outfits', img: editOutfits, path: '/outfits', isNew: true },
+    { title: 'AI Upscale', img: editUpscale, botCommand: "UPSCALE" },
+    { title: 'Eraser', img: editEraser, path: '/eraser' },
+    { title: 'Uncrop', img: editUncrop, path: '/uncrop' },
+    { title: 'Generate image', botCommand: "GENERATE" },
+  ]
   return (
     <Screen>
       <Header onBack={() => { history.back() }} />
 
-      <h1>monet_bot webapp</h1>
-      {/* <img src={viteLogo} className="logo" alt="Vite logo" /> */}
-      {/* <img src={reactLogo} className="logo react" alt="React logo" /> */}
-      <div className="py-5">
-        {
-          [
-            ['/settings', 'Settings'],
-            ['/edits', 'Edits'],
-            ['/add-replace', 'Add&Replace'],
-            ['/erase', 'Erase'],
-            ['/outfit', 'Outfit'],
-            ['/uncrop', 'Uncrop'],
-          ].map(link => (
-            <div>
-              <span>- </span>
-              <Link to={link[0]} className="text-accent">{link[1]}</Link>
+      <div className="max-w-[500px] mx-auto">
+        <h4 className="">AI Edits</h4>
+        <div className="mt-6 grid grid-cols-2 gap-3">
+          {edits.map(item => (
+            <div className="relative bg-oslo/[0.08] rounded-[12px] pb-[109%] bg-cover bg-center overflow-hidden" style={{ backgroundImage: `url(${item.img})` }}>
+              {item.isNew && (
+                <New />
+              )}
+              <div className="absolute bottom-0 w-full p-3 pt-5 text-[15px] leading-5 font-semibold text-white bg-gradient-to-b from-transparent to-oslo">{item.title}</div>
             </div>
-          ))
-        }
+          ))}
+        </div>
       </div>
     </Screen>
   )

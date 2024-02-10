@@ -1,11 +1,10 @@
 import { createHashRouter } from 'react-router-dom'
 
 import Home from './pages/Home'
-import Edits from './pages/Edits'
 import AddReplace from './pages/AddReplace'
 import Settings from './pages/Settings'
 import Uncrop from './pages/Uncrop'
-import Outfit from './pages/Outfit'
+import Outfits from './pages/Outfits'
 
 export const router = createHashRouter([
   {
@@ -22,20 +21,16 @@ export const router = createHashRouter([
     element: <Settings />,
   },
   {
-    path: "/edits",
-    element: <Edits />,
-  },
-  {
     path: "/add-replace",
     element: <AddReplace />,
   },
   {
-    path: "/erase",
+    path: "/eraser",
     element: <AddReplace mode="ERASE" />,
   },
   {
-    path: "/outfit",
-    element: <Outfit />,
+    path: "/outfits",
+    element: <Outfits />,
   },
   {
     path: "/uncrop",

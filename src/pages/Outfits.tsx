@@ -11,7 +11,7 @@ import outfitSexy from '../assets/outfit-sexy.jpg'
 import outfitSuperman from '../assets/outfit-superman.jpg'
 import outfitSkeleton from '../assets/outfit-skeleton.jpg'
 
-function Outfit() {
+function Outfits() {
   const outfits = [
     { text: 'BDSM', img: outfitBdsm },
     { text: 'Haircut', img: outfitHaircut, isNew: true },
@@ -41,4 +41,4 @@ function Outfit() {
   )
 }
 
-export default Outfit
+export default Outfits
