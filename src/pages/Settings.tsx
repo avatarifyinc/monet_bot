@@ -37,8 +37,8 @@ function Settings() {
       // setSuccess(true)
       notificationOccurred('success')
       setTimeout(() => {
-        // window.Telegram?.WebApp.close()
-        closeApp()
+        window.Telegram?.WebApp.close()
+        // closeApp()
       }, 100)
     } catch (e) {
       // setSuccess(false)
