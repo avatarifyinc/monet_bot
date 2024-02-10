@@ -27,7 +27,7 @@ function Home() {
 
   return (
     <Screen>
-      <Header onBack={() => { history.back() }} />
+      <Header onBack={() => { WebApp.close() }} />
 
       <div className="max-w-[500px] mx-auto">
         <h4 className="">AI Edits</h4>
