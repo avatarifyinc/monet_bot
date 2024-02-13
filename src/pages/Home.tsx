@@ -12,13 +12,20 @@ import editUpscale from '../assets/edit-upscale.jpg'
 import editEraser from '../assets/edit-eraser.jpg'
 import editUncrop from '../assets/edit-uncrop.jpg'
 
+import coverAddreplace from '../assets/cover-addreplace.mp4'
+import coverEraser from '../assets/cover-eraser.mp4'
+import coverGenerate from '../assets/cover-generate.mp4'
+import coverOutfits from '../assets/cover-outfits.mp4'
+import coverUncrop from '../assets/cover-uncrop.mp4'
+import coverUpscale from '../assets/cover-upscale.mp4'
+
 const edits = [
-  { title: 'Add&Replace', img: editAddreplace, path: '/add-replace' },
-  { title: 'AI Outfits', img: editOutfits, path: '/outfits', isNew: true },
-  { title: 'AI Upscale', img: editUpscale, botCommand: "SELECTED_UPSCALE" },
-  { title: 'Eraser', img: editEraser, path: '/eraser' },
-  { title: 'Uncrop', img: editUncrop, path: '/uncrop' },
-  { title: 'Generate image', botCommand: "SELECTED_GENERATE" },
+  { title: 'Add&Replace', img: editAddreplace, video: coverAddreplace, path: '/add-replace' },
+  { title: 'AI Outfits', img: editOutfits, video: coverOutfits, path: '/outfits', isNew: true },
+  { title: 'AI Upscale', img: editUpscale, video: coverUpscale, botCommand: "SELECTED_UPSCALE" },
+  { title: 'Eraser', img: editEraser, video: coverEraser, path: '/eraser' },
+  { title: 'Uncrop', img: editUncrop, video: coverUncrop, path: '/uncrop' },
+  { title: 'Generate image', video: coverGenerate, botCommand: "SELECTED_GENERATE" },
 ]
 
 function Home() {
@@ -32,10 +39,11 @@ function Home() {
       <div className="max-w-[500px] mx-auto">
         <h4 className="">AI Edits</h4>
         <div className="mt-6 grid grid-cols-2 gap-3">
-          {edits.map(item => (
+          {edits.map((item, i) => (
             <button
-              className="relative bg-oslo/[0.08] rounded-[12px] pb-[109%] bg-cover bg-center overflow-hidden"
-              style={{ backgroundImage: `url(${item.img})`}}
+              key={i}
+              className="relative bg-oslo/[0.08] rounded-[12px] bg-cover pb-[109%] bg-center overflow-hidden hover:brightness-110 active:scale-[96%] transition-all"
+              // style={{ backgroundImage: `url(${item.img})`}}
               onClick={() => {
                 if (item.botCommand) {
                   WebApp.sendData(item.botCommand)
@@ -46,10 +54,26 @@ function Home() {
                 }
               }}
             >
+              {item.video && (
+                <video
+                  className="absolute max-w-min w-[102%] min-h-[102%] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+                  // width="400"
+                  // height="300"
+                  autoPlay
+                  loop
+                  muted
+                  controls={false}
+                  /* poster={item.img} */
+                >
+                  <source src={item.video} type="video/mp4" />
+                </video>
+              )}
               {item.isNew && (
                 <New />
               )}
-              <div className="absolute bottom-0 w-full p-3 pt-5 text-[15px] leading-5 font-semibold text-white bg-gradient-to-b from-transparent to-oslo">{item.title}</div>
+              <div className="absolute bottom-0 w-full p-3 pt-5 text-[15px] leading-5 font-semibold text-white bg-gradient-to-b from-transparent to-oslo">
+                {item.title}
+              </div>
             </button>
           ))}
         </div>
