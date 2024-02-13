@@ -1,9 +1,12 @@
 import { useWebApp } from '@vkruglikov/react-telegram-web-app';
+import { useState } from 'react'
+
 import Header from '../kit/Header'
 import New from '../kit/New'
 import Screen from '../kit/Screen'
 
 import { useGetOutfits, usePostOutfit } from '../api'
+import { useStore } from '../store'
 import { TOutfit } from '../types'
 
 function Outfits() {
@@ -14,12 +17,23 @@ function Outfits() {
     // todo: error screen
     data: outfits
   } = useGetOutfits()
+
+  const { setPostError } = useStore()
+  const [isBusy, setIsBusy] = useState(false)
+
   const postOutfit = usePostOutfit()
 
-  const selectOutfit = (outfit: TOutfit) => {
-    // todo: loader
-    postOutfit(outfit)
-    WebApp.close()
+  const selectOutfit = async (outfit: TOutfit) => {
+    setIsBusy(true)
+    try {
+      const resJson = await postOutfit(outfit)
+      console.log('postOutfit res', resJson)
+      WebApp.close()
+    } catch (e) {
+      setPostError(e as Error)
+    } finally {
+      setIsBusy(false)
+    }
   }
 
   return (
@@ -32,7 +46,7 @@ function Outfits() {
           <button /* todo: Button */
             className="relative bg-oslo/[0.08] rounded-[12px] pb-[127%] bg-cover bg-center overflow-hidden hover:brightness-110 active:scale-[95%] transition-all"
             style={{ backgroundImage: `url(${outfit.imageURL})` }}
-            onClick={() => { selectOutfit(outfit) }}
+            onClick={isBusy ? () => {} : () => { selectOutfit(outfit) }}
           >
             {outfit.isNew && (
               <New />

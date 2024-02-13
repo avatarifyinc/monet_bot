@@ -1,7 +1,8 @@
 import cx from 'classnames'
 import { MainButton, useHapticFeedback, useWebApp } from '@vkruglikov/react-telegram-web-app'
 
-// import { useSplash } from '../hooks'
+import { useStore } from '../store'
+
 import Loader from './Loader'
 import Limiter from './Limiter'
 
@@ -17,10 +18,8 @@ type TButton = {
 
 function Button({ theme = 'default', isBottom, isActive, text, disabled, isBusy, onClick }: TButton) {
   const webApp = useWebApp()
-  // const { isSplash } = useSplash()
-  const isSplash = false
   const [impactOccurred] = useHapticFeedback()
-
+  const { overlays } = useStore()
 
   const onClickVibro = disabled ? undefined : () => {
     console.log('Button vibro')
@@ -28,10 +27,11 @@ function Button({ theme = 'default', isBottom, isActive, text, disabled, isBusy,
     onClick()
   }
 
-  if (isBottom && webApp && webApp.platform !== 'unknown') {
-    if (isSplash) {
-      return null
-    }
+  if (isBottom && overlays.length) {
+    return null
+  }
+
+  if (isBottom && webApp.platform !== 'unknown') {
     return (
       <MainButton
         text={text}

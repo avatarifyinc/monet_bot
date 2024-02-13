@@ -10,6 +10,8 @@ import DemoMode from './kit/DemoMode'
 
 import { router } from './router'
 
+import OverlayError from './overlays/OverlayError'
+
 const queryClient = new QueryClient()
 
 function App() {
@@ -21,6 +23,7 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <RouterProvider router={router} />
         <DemoMode />
+        <OverlayError />
       </QueryClientProvider>
     </WebAppProvider>
   )

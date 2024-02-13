@@ -7,6 +7,11 @@ type TStore = {
   settings: undefined | TSettings
   setSettings: (settings: TSettings) => void
   resetSettings: () => void
+
+  overlays: number[]
+  setOverlays: (val: number[]) => void
+  postError: null | Error
+  setPostError: (postError: null | Error) => void
 }
 
 const DEFAULT_SETTINGS: TSettings = {
@@ -18,5 +23,10 @@ const DEFAULT_SETTINGS: TSettings = {
 export const useStore = create<TStore>((set/*, get*/) => ({
   settings: undefined,
   setSettings: (settings) => set(({ settings })),
-  resetSettings: () => set(({ settings: DEFAULT_SETTINGS }))
+  resetSettings: () => set(({ settings: DEFAULT_SETTINGS })),
+
+  overlays: [],
+  setOverlays: (overlays) => set(({ overlays })),
+  postError: null,
+  setPostError: (postError) => set(({ postError })),
 }))
