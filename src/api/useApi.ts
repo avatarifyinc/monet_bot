@@ -2,9 +2,9 @@ import { useInitData } from '@vkruglikov/react-telegram-web-app'
 import { useQuery } from '@tanstack/react-query'
 
 import { useStore } from '../store'
-import { TSettings } from '../types'
+import { TSettings, TOutfit } from '../types'
 
-import { mockSettings } from './mock'
+import { mockSettings, mockOutfits } from './mock'
 
 const apiUrl = import.meta.env.VITE_API_URL
 const staleTime = 5 * 60 * 1000
@@ -19,20 +19,19 @@ const handleJsonResponse = (res: any) => {
 export const useGetSettings = () => {
   const [, initData] = useInitData()
   const { setSettings } = useStore()
-
   return (
     useQuery<TSettings, Error>({
       queryKey: ['settings'],
       queryFn: (!initData /*!!'MOCK'*/)
         ? () => mockSettings
         : () =>
-          fetch(`${apiUrl}/settings`, {
+          fetch(`${apiUrl}/endpoints/settings`, {
             headers: {
               'X-TG-INIT-DATA': initData || '',
             }
           }).then(handleJsonResponse),
       onSuccess: (data) => {
-        console.log('useApi: settings', data)
+        console.log('useGetSettings', data)
         setSettings(data)
       },
       staleTime
@@ -45,12 +44,49 @@ export const usePostSettings = () => {
   const { settings } = useStore()
   const url = !initData
     ? 'https://jsonplaceholder.typicode.com/posts'
-    : `${apiUrl}/settings`
-
+    : `${apiUrl}/endpoints/settings`
   return () =>
     fetch(url, {
       method: 'POST',
       body: JSON.stringify(settings),
+      headers: {
+        'Content-type': 'application/json',
+        'X-TG-INIT-DATA': initData || '',
+      },
+    }).then(handleJsonResponse)
+}
+
+export const useGetOutfits = () => {
+  const [, initData] = useInitData()
+  return (
+    useQuery<TOutfit[], Error>({
+      queryKey: ['outfits'],
+      queryFn: (!initData /*!!'MOCK'*/)
+        ? () => mockOutfits
+        : () =>
+          fetch(`${apiUrl}/outfits`, {
+            headers: {
+              'X-TG-INIT-DATA': initData || '',
+            }
+          }).then(handleJsonResponse)
+          .then(json => json.costumes),
+      onSuccess: (data) => {
+        console.log('useGetOutfits', data)
+      },
+      staleTime
+    })
+  )
+}
+
+export const usePostOutfits = () => {
+  const [, initData] = useInitData()
+  const url = !initData
+    ? 'https://jsonplaceholder.typicode.com/posts'
+    : `${apiUrl}/outfits`
+  return (outfit: TOutfit) =>
+    fetch(url, {
+      method: 'POST',
+      body: JSON.stringify(outfit),
       headers: {
         'Content-type': 'application/json',
         'X-TG-INIT-DATA': initData || '',
