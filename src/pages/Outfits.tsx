@@ -1,4 +1,4 @@
-import { useWebApp } from '@vkruglikov/react-telegram-web-app';
+import { useHapticFeedback, useWebApp } from '@vkruglikov/react-telegram-web-app'
 import { useState } from 'react'
 
 import Header from '../kit/Header'
@@ -11,6 +11,8 @@ import { TOutfit } from '../types'
 
 function Outfits() {
   const WebApp = useWebApp()
+  const [, notificationOccurred] = useHapticFeedback()
+
   const {
     /* isLoading: isOutfitsLoading, error: outfitsError, */
     // todo: loader
@@ -23,12 +25,16 @@ function Outfits() {
 
   const postOutfit = usePostOutfit()
 
-  const selectOutfit = async (outfit: TOutfit) => {
+  const save = async (outfit: TOutfit) => {
     setIsBusy(true)
     try {
       const resJson = await postOutfit(outfit)
       console.log('postOutfit res', resJson)
-      WebApp.close()
+      notificationOccurred('success')
+      setTimeout(() => {
+        window.Telegram?.WebApp.close()
+        WebApp.close()
+      }, 100)
     } catch (e) {
       setPostError(e as Error)
     } finally {
@@ -46,7 +52,7 @@ function Outfits() {
           <button /* todo: Button */
             className="relative bg-oslo/[0.08] rounded-[12px] pb-[127%] bg-cover bg-center overflow-hidden hover:brightness-110 active:scale-[95%] transition-all"
             style={{ backgroundImage: `url(${outfit.imageURL})` }}
-            onClick={isBusy ? () => {} : () => { selectOutfit(outfit) }}
+            onClick={isBusy ? () => {} : () => { save(outfit) }}
           >
             {outfit.isNew && (
               <New />
