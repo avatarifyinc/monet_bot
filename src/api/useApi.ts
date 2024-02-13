@@ -78,7 +78,7 @@ export const useGetOutfits = () => {
   )
 }
 
-export const usePostOutfits = () => {
+export const usePostOutfit = () => {
   const [, initData] = useInitData()
   const url = !initData
     ? 'https://jsonplaceholder.typicode.com/posts'
