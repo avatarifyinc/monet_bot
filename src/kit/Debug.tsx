@@ -30,8 +30,15 @@ function Debug({ isOpen }: {isOpen?: boolean}) {
       <div>
         <div className="mt-10 text-[12px] break-words overflow-x-auto">
           <h2>Debug</h2>
+          <strong>location.href = </strong>
+          <pre className="whitespace-pre-wrap">
+            {location.href}
+          </pre>
+          <br />
           <strong>window.Telegram.WebApp = </strong>
-          <pre>{JSON.stringify(window.Telegram?.WebApp, null, 2)}</pre>
+          <pre className="whitespace-pre-wrap">
+            {JSON.stringify(window.Telegram?.WebApp, null, 2)}
+          </pre>
         </div>
       </div>
     </div>
