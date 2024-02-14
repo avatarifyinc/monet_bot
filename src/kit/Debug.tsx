@@ -1,7 +1,11 @@
 import cx from 'classnames'
 import { useCallback, useEffect, useState } from 'react'
 
+import { useStore } from '../store'
+
 function Debug({ isOpen }: {isOpen?: boolean}) {
+  const { generationId } = useStore()
+
   const OPEN_DEBUG_RIGHT_CLICKS = 3
 
   const [n, setN] = useState(0)
@@ -33,6 +37,11 @@ function Debug({ isOpen }: {isOpen?: boolean}) {
           <strong>location.href = </strong>
           <pre className="whitespace-pre-wrap">
             {location.href}
+          </pre>
+          <br />
+          <strong>generationId = </strong>
+          <pre className="whitespace-pre-wrap">
+            {JSON.stringify(generationId, null, 2)}
           </pre>
           <br />
           <strong>window.Telegram.WebApp = </strong>
