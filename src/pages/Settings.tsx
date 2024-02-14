@@ -2,6 +2,7 @@ import { useHapticFeedback, useWebApp } from '@vkruglikov/react-telegram-web-app
 import { useState } from 'react'
 
 import { useGetSettings, usePostSettings } from '../api'
+import { useInit } from '../hooks'
 import { useStore } from '../store'
 
 import Button from '../kit/Button'
@@ -14,6 +15,7 @@ import { RATIOS_TITLED, STYLES_TITLED } from '../const'
 import { closeApp } from '../utils'
 
 function Settings() {
+  useInit()
   const WebApp = useWebApp()
   const [, notificationOccurred] = useHapticFeedback()
   const { settings, setSettings, resetSettings, setPostError } = useStore()

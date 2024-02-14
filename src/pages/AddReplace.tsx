@@ -4,6 +4,8 @@ import { useState } from 'react'
 import { BottomSheet } from 'react-spring-bottom-sheet'
 import 'react-spring-bottom-sheet/dist/style.css'
 
+import { useInit } from '../hooks'
+
 import Button from '../kit/Button'
 import Input from '../kit/Input'
 import Header from '../kit/Header'
@@ -20,6 +22,8 @@ import testPhoto from '../assets/test-photo.jpg'
 import { ReactComponent as IconSettings } from '../assets/settings.svg'
 
 function AddReplace({ mode } : { mode?: 'ERASE'}) {
+  useInit()
+
   const DEFAULT = {
     strength: 4,
     negativePropmt: '',

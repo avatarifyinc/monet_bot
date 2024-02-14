@@ -2,6 +2,8 @@ import { useWebApp } from '@vkruglikov/react-telegram-web-app';
 
 import { useNavigate } from 'react-router-dom'
 
+import { useInit } from '../hooks'
+
 import Header from '../kit/Header'
 import Screen from '../kit/Screen'
 import New from '../kit/New'
@@ -29,6 +31,7 @@ const edits = [
 ]
 
 function Home() {
+  useInit()
   const WebApp = useWebApp()
   const navigate = useNavigate()
 

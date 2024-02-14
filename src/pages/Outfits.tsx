@@ -6,10 +6,12 @@ import New from '../kit/New'
 import Screen from '../kit/Screen'
 
 import { useGetOutfits, usePostOutfit } from '../api'
+import { useInit } from '../hooks'
 import { useStore } from '../store'
 import { TOutfit } from '../types'
 
 function Outfits() {
+  useInit()
   const WebApp = useWebApp()
   const [, notificationOccurred] = useHapticFeedback()
 
@@ -20,7 +22,7 @@ function Outfits() {
     data: outfits
   } = useGetOutfits()
 
-  const { setPostError } = useStore()
+  const { generationId, setPostError } = useStore()
   const [isBusy, setIsBusy] = useState(false)
 
   const postOutfit = usePostOutfit()
@@ -29,7 +31,7 @@ function Outfits() {
     setIsBusy(true)
     try {
       const resJson = await postOutfit({
-        generation_id: 'test', // todo: get generation_id
+        generation_id: generationId || '',
         preset: outfit.preset
       })
       console.log('postOutfit res', resJson)

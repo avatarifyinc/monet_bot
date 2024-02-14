@@ -4,6 +4,9 @@ import { STYLES_TITLED, RATIOS_TITLED } from '../const'
 import { TSettings } from '../types'
 
 type TStore = {
+  generationId: undefined | string
+  setGenerationId: (generationId: string) => void
+
   settings: undefined | TSettings
   setSettings: (settings: TSettings) => void
   resetSettings: () => void
@@ -21,6 +24,9 @@ const DEFAULT_SETTINGS: TSettings = {
 }
 
 export const useStore = create<TStore>((set/*, get*/) => ({
+  generationId: undefined,
+  setGenerationId: (generationId) => set(({ generationId })),
+
   settings: undefined,
   setSettings: (settings) => set(({ settings })),
   resetSettings: () => set(({ settings: DEFAULT_SETTINGS })),

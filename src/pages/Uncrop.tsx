@@ -1,8 +1,12 @@
+import { useInit } from '../hooks'
+
 import Button from '../kit/Button'
 import Header from '../kit/Header'
 import Screen from '../kit/Screen'
 
 function Uncrop() {
+  useInit()
+
   return (
     <Screen>
       <Header onBack={() => { history.back() }} />
