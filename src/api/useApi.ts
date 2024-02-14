@@ -9,11 +9,13 @@ import { mockSettings, mockOutfits } from './mock'
 const apiUrl = import.meta.env.VITE_API_URL
 const staleTime = 5 * 60 * 1000
 
-const handleJsonResponse = (res: any) => {
+const handleJsonResponse = (res: Response) => {
   if (!res.ok) {
     throw new Error(`Backend ${res.status}`);
   }
-  return res.json()
+  if (res.status !== 204) {
+    return res.json()
+  }
 }
 
 export const useGetSettings = () => {
