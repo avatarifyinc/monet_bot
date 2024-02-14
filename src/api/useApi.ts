@@ -83,10 +83,13 @@ export const usePostOutfit = () => {
   const url = !initData
     ? 'https://jsonplaceholder.typicode.com/posts'
     : `${apiUrl}/outfits`
-  return (outfit: TOutfit) =>
+  return (data: {
+    generation_id: string,
+    preset: string
+  }) =>
     fetch(url, {
       method: 'POST',
-      body: JSON.stringify(outfit),
+      body: JSON.stringify(data),
       headers: {
         'Content-type': 'application/json',
         'X-TG-INIT-DATA': initData || '',

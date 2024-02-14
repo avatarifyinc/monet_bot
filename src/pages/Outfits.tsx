@@ -28,7 +28,10 @@ function Outfits() {
   const save = async (outfit: TOutfit) => {
     setIsBusy(true)
     try {
-      const resJson = await postOutfit(outfit)
+      const resJson = await postOutfit({
+        generation_id: 'test', // todo: get generation_id
+        preset: outfit.preset
+      })
       console.log('postOutfit res', resJson)
       notificationOccurred('success')
       setTimeout(() => {
