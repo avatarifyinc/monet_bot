@@ -98,3 +98,37 @@ export const usePostOutfit = () => {
       },
     }).then(handleJsonResponse)
 }
+
+export const usePostUpscale = () => {
+  const [, initData] = useInitData()
+  const url = !initData
+    ? 'https://jsonplaceholder.typicode.com/posts'
+    : `${apiUrl}/upscale`
+  return (data: {
+    generation_id: string,
+  }) =>
+    fetch(url, {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: {
+        'Content-type': 'application/json',
+        'X-TG-INIT-DATA': initData || '',
+      },
+    }).then(handleJsonResponse)
+}
+
+export const usePostGenerate = () => {
+  const [, initData] = useInitData()
+  const url = !initData
+    ? 'https://jsonplaceholder.typicode.com/posts'
+    : `${apiUrl}/text-to-image`
+  return () =>
+    fetch(url, {
+      method: 'POST',
+      body: JSON.stringify({}),
+      headers: {
+        'Content-type': 'application/json',
+        'X-TG-INIT-DATA': initData || '',
+      },
+    }).then(handleJsonResponse)
+}
