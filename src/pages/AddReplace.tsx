@@ -1,5 +1,6 @@
 import { useAutoAnimate } from '@formkit/auto-animate/react'
 import { useState } from 'react'
+import { ReactSketchCanvas } from 'react-sketch-canvas'
 
 import { BottomSheet } from 'react-spring-bottom-sheet'
 import 'react-spring-bottom-sheet/dist/style.css'
@@ -50,6 +51,14 @@ function AddReplace({ mode } : { mode?: 'ERASE'}) {
 
       <div className="flex-1 bg-[#8881] relative select-none">
         <img className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[100%] max-h-[100%]" src={testPhoto} />
+        <ReactSketchCanvas
+          // width="100%"
+          // height="150px"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[100%] max-h-[100%]"
+          canvasColor="transparent"
+          strokeWidth={16}
+          strokeColor="#9e3e6caa"
+        />
       </div>
 
       <div className="">

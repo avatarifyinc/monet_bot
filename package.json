@@ -21,6 +21,7 @@
     "react-dom": "^18.2.0",
     "react-range-slider-input": "^3.0.7",
     "react-router-dom": "^6.21.1",
+    "react-sketch-canvas": "^6.2.0",
     "react-spring-bottom-sheet": "^3.5.0-alpha.0",
     "tw-colors": "^1.2.6",
     "vite-plugin-checker": "^0.6.2",
