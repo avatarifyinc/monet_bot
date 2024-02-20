@@ -1,6 +1,6 @@
 import { useAutoAnimate } from '@formkit/auto-animate/react'
-import { useState } from 'react'
-import { ReactSketchCanvas } from 'react-sketch-canvas'
+import { useState, useRef } from 'react'
+import { ReactSketchCanvas, type ReactSketchCanvasRef } from 'react-sketch-canvas'
 
 import { BottomSheet } from 'react-spring-bottom-sheet'
 import 'react-spring-bottom-sheet/dist/style.css'
@@ -25,13 +25,16 @@ import { ReactComponent as IconSettings } from '../assets/settings.svg'
 function AddReplace({ mode } : { mode?: 'ERASE'}) {
   useInit()
 
+  const canvasRef = useRef<ReactSketchCanvasRef>(null)
+  const [strokeWidth/*, setStrokeWidth */] = useState<number>(16)
+
   const DEFAULT = {
     strength: 4,
     negativePropmt: '',
     isForceInsert: true,
   }
 
-  const [currentTool, setCurrentTool] = useState('Draw')
+  const [currentTool, setCurrentTool] = useState<'PEN' | 'ERASER'>('PEN')
   const [isSettingsOpen, setSettingsOpen] = useState(false)
   const [strength, setStrength] = useState(DEFAULT.strength)
   const [negativePropmt, setNegativePrompt] = useState(DEFAULT.negativePropmt)
@@ -39,10 +42,25 @@ function AddReplace({ mode } : { mode?: 'ERASE'}) {
   const [isForceInsert, setIsForceInsert] = useState(DEFAULT.isForceInsert)
   const [animateParentRef] = useAutoAnimate()
 
-  const reset = () => {
+  const resetSettings = () => {
     setStrength(DEFAULT.strength)
     setNegativePrompt(DEFAULT.negativePropmt)
     setIsForceInsert(DEFAULT.isForceInsert)
+  }
+
+  const save = () => {
+    canvasRef.current?.exportImage('png')
+      .then(data => {
+        console.log(data);
+        const image = new Image()
+        image.src = data
+
+        const w = window.open('')
+        w?.document.write(image.outerHTML)
+      })
+      .catch(e => {
+        console.log(e);
+      })
   }
 
   return (
@@ -52,28 +70,62 @@ function AddReplace({ mode } : { mode?: 'ERASE'}) {
       <div className="flex-1 bg-[#8881] relative select-none">
         <img className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[100%] max-h-[100%]" src={testPhoto} />
         <ReactSketchCanvas
+          ref={canvasRef}
           // width="100%"
           // height="150px"
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[100%] max-h-[100%]"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[100%] max-h-[100%] text-[#9e3e6caa]"
           canvasColor="transparent"
-          strokeWidth={16}
-          strokeColor="#9e3e6caa"
+          strokeWidth={strokeWidth}
+          eraserWidth={strokeWidth}
+          strokeColor="currentColor"
         />
       </div>
 
       <div className="">
         <ToolBar groups={[
           <>
-            <Tool type="Undo" onClick={() => {}} />
-            <Tool type="Redo" onClick={() => {}} />
+            <Tool
+              type="Undo"
+              onClick={() => {
+                canvasRef.current?.undo()
+              }}
+            />
+            <Tool
+              type="Redo"
+              onClick={() => {
+                canvasRef.current?.redo()
+              }}
+            />
           </>,
           <>
-            <Tool type="Draw" isActive={currentTool == 'Draw'} onClick={() => { setCurrentTool('Draw') }} />
-            <Tool type="Erase" isActive={currentTool == 'Erase'} onClick={() => { setCurrentTool('Erase') }} />
+            <Tool
+              type="Draw"
+              isActive={currentTool === 'PEN'}
+              onClick={() => {
+                setCurrentTool('PEN')
+                canvasRef.current?.eraseMode(false)
+              }} />
+            <Tool
+              type="Erase"
+              isActive={currentTool === 'ERASER'}
+              onClick={() => {
+                setCurrentTool('ERASER')
+                canvasRef.current?.eraseMode(true)
+              }} />
           </>,
           <>
-            <Tool type="Invert" onClick={() => {}} />
-            <Tool type="Clear" onClick={() => {}} />
+            <Tool
+              type="Invert"
+              onClick={() => {
+                // canvasRef.current?.clearCanvas()
+              }}
+            />
+            <Tool
+              type="Clear"
+              onClick={() => {
+                canvasRef.current?.clearCanvas()
+              }}
+            />
           </>
         ]} />
 
@@ -153,7 +205,7 @@ function AddReplace({ mode } : { mode?: 'ERASE'}) {
                   <Button
                     theme="secondary"
                     text="Reset"
-                    onClick={reset}
+                    onClick={resetSettings}
                   />
                 </div>
               </div>
@@ -165,7 +217,7 @@ function AddReplace({ mode } : { mode?: 'ERASE'}) {
     <Button
       isBottom
       text={mode === 'ERASE' ? 'Remove' : 'Generate'}
-      onClick={() => {}}
+      onClick={save}
       // disabled={isButtonDisabled}
       // isBusy={isBusy}
     />

@@ -25,7 +25,7 @@ const Toggle = ({ checked, onChange }: {
         onChange={() => { onChange(!checked) }}
       />
       <div className={cx(
-          'absolute w-[28px] h-[28px] top-1/2 -translate-y-1/2 translate-x-[2px] rounded-full bg-white transition-all group-active/Toggle:scale-[0.9]',
+          'absolute w-[28px] h-[28px] top-1/2 -translate-y-1/2 rounded-full bg-white transition-all group-active/Toggle:scale-[0.9]',
           checked ? 'translate-x-[26px]' : 'translate-x-[2px]',
         )}
       />
