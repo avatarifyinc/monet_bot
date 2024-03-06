@@ -42,14 +42,14 @@ jobs:
         # Here's how you can achieve this:
         run: npm run build -- --base /${{ github.event.repository.name }}
       - name: Create 404.html
-        run: cp ./app/dist/index.html ./app/dist/404.html
+        run: cp ./dist/index.html ./dist/404.html
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
           # Upload dist repository
-          path: './app/dist'
+          path: './dist'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1
