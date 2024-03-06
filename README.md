@@ -1,3 +1,12 @@
-# monet
+# 🤖 monet_bot (telegram webapp)
 
-## https://monet-miniapp.netlify.app/
+## Install
+
+```sh
+npm ci
+npm run dev
+```
+
+## Deploy
+
+https://avatarifyinc.github.io/monet_bot/
