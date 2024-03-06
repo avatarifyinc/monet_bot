@@ -3,10 +3,10 @@
 ## Install
 
 ```sh
-npm i
+npm ci
 npm run dev
 ```
 
 ## Deploy
 
-`npm run deploy` -> https://avatarifyinc.github.io/monet_bot/
+https://avatarifyinc.github.io/monet_bot/

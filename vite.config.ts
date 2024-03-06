@@ -1,13 +1,33 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import svgrPlugin from 'vite-plugin-svgr'
-import pluginChecker from 'vite-plugin-checker'
+import vue from '@vitejs/plugin-vue';
+import path from 'path';
+import { defineConfig } from 'vite';
+import svgLoader from 'vite-svg-loader';
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    react(),
-    svgrPlugin(),
-    pluginChecker({ typescript: true })
+    vue(),
+    svgLoader({
+      defaultImport: 'component',
+      svgoConfig: {
+        plugins: [
+          {
+            name: 'cleanupIds',
+            params: {
+              remove: false,
+              minify: false,
+            },
+          },
+        ],
+      },
+    }),
   ],
-})
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
+  build: {
+    assetsInlineLimit: 0,
+    minify: true,
+  },
+});
