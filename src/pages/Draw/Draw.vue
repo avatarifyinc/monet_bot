@@ -240,6 +240,8 @@ const setup = (
     begin(el, c);
   }
 
+  let wasDrawing = false;
+
   function _mobilemove(e: TouchEvent) {
     if (!isDrawing || !_rect || !el) {
       return;
@@ -248,6 +250,8 @@ const setup = (
     if (e.touches.length !== 1) {
       return;
     }
+
+    wasDrawing = true;
 
     const t = e.touches[0];
 
@@ -273,6 +277,8 @@ const setup = (
 
   function _mousemove(e: MouseEvent) {
     if (isDrawing && el) {
+      wasDrawing = true;
+
       const c = { x: e.offsetX, y: e.offsetY };
 
       draw(el, c);
@@ -286,6 +292,10 @@ const setup = (
 
     prev = null;
     isDrawing = false;
+
+    if (!wasDrawing) {
+      return;
+    }
 
     stack.value = stack.value.slice(0, undoIndex.value);
 
