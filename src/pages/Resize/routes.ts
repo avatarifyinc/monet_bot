@@ -1,4 +1,4 @@
 export const resizeRoute = {
-  path: '/canvas/resize',
+  path: '/resize',
   component: () => import('./Resize.vue'),
 };

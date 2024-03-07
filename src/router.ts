@@ -5,10 +5,9 @@ import {
   RouteRecordRaw,
 } from 'vue-router';
 
-import { drawRoute } from '@/pages/Canvas/views/Draw/routes';
-import { resizeRoute } from '@/pages/Canvas/views/Resize/routes';
-
-import { canvasRoute } from './pages/Canvas/routes';
+import { drawRoute } from './pages/Draw/routes';
+import { resizeRoute } from './pages/Resize/routes';
+import { canvasRoute } from './pages/routes';
 
 const pages: RouteRecordRaw[] = ([] as RouteRecordRaw[])
   .concat(canvasRoute)

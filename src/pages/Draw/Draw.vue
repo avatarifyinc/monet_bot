@@ -8,6 +8,8 @@ import { ZoomDirective as vZoom } from '@/zoom-rotate-transform/zoom';
 
 import { useState } from './useState';
 
+const { stack, undoIndex } = useState();
+
 const inputValue = ref('');
 const canvasRef = ref<HTMLCanvasElement | null>(null);
 const matrix = ref({
@@ -91,7 +93,7 @@ const drawingAreaRef = ref<HTMLElement | null>(null);
 const loadedImage = ref<HTMLImageElement | null>(null);
 
 onMounted(() => {
-  import('../../assets/images/test-photo.jpg').then((m) => {
+  import('@/assets/images/test-photo.jpg').then((m) => {
     const _img = new Image();
 
     _img.onload = () => {
@@ -151,6 +153,19 @@ const drawImageBackgroundOnCanvas = ([wh, canvas]: [
   }
 
   ctx.scale(pr, pr);
+
+  if (canvas === sideCanvasRef.value) {
+    const _canvas = sideCanvasRef.value;
+    const _ctx = sideContext.value;
+
+    if (!_canvas || !_ctx) {
+      return;
+    }
+
+    const _data = stack.value[undoIndex.value - 1];
+
+    clearCanvasAndDraw(_canvas, _data);
+  }
 };
 
 const onZoomGesture = {
@@ -169,8 +184,6 @@ const onZoomGesture = {
 let prev: { x: number; y: number } | null = null;
 
 let isDrawing = false;
-const { stack } = useState();
-const undoIndex = ref(0);
 
 const begin = (el: HTMLCanvasElement, c: { x: number; y: number }) => {
   const ctx = el.getContext('2d')!;
