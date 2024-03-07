@@ -310,12 +310,16 @@ const onPan = ([dx, dy]: [number, number]) => {
   verticalAlignment.value = r.va;
   horizontalAligment.value = r.ha;
 
-  if (r.ha || r.va) {
-    sdk.HapticFeedback.impactOccurred('light');
-  }
-
   toStyle.value = clampUpdatedStyle(r.s);
 };
+
+const q = computed(() => verticalAlignment.value || horizontalAligment.value);
+
+watch(q, (value) => {
+  if (value) {
+    sdk.HapticFeedback.impactOccurred('light');
+  }
+});
 
 const onTransformGesture = {
   onEvent: onPan,
