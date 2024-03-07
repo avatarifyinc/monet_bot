@@ -166,7 +166,7 @@ defineExpose({
   }
 
   &::placeholder {
-    color: var(--tok-text-color);
+    color: var(--tok-text-color-48);
   }
 }
 
@@ -177,18 +177,18 @@ defineExpose({
   align-items: center;
 
   outline: 1px solid var(--tok-text-color-16);
-  background-color: var(--tok-text-color-08);
+  background: var(--tok-background-color);
   cursor: text;
 
-  &[data-size='s'] {
-    height: var(--tok-height-s);
-    min-height: var(--tok-height-s);
-    border-radius: var(--tok-radius-s);
+  // &[data-size='s'] {
+  //   height: var(--tok-height-s);
+  //   min-height: var(--tok-height-s);
+  //   border-radius: var(--tok-radius-s);
 
-    font: var(--tok-font-m);
+  //   font: var(--tok-font-m);
 
-    padding-left: var(--tok-padding-s);
-  }
+  //   padding-left: var(--tok-padding-s);
+  // }
 
   &[data-size='m'] {
     height: var(--tok-height-m);
@@ -200,15 +200,15 @@ defineExpose({
     padding-left: var(--tok-padding-m);
   }
 
-  &[data-size='l'] {
-    height: var(--tok-height-l);
-    min-height: var(--tok-height-l);
-    border-radius: var(--tok-radius-l);
+  // &[data-size='l'] {
+  //   height: var(--tok-height-l);
+  //   min-height: var(--tok-height-l);
+  //   border-radius: var(--tok-radius-l);
 
-    font: var(--tok-font-m);
+  //   font: var(--tok-font-m);
 
-    padding-left: var(--tok-padding-l);
-  }
+  //   padding-left: var(--tok-padding-l);
+  // }
 
   &[data-state='focused'] {
     outline-color: var(--tok-primary);
@@ -248,10 +248,8 @@ defineExpose({
   color: var(--tok-text-color-48);
   cursor: pointer;
 
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      opacity: var(--tok-hover-opacity);
-    }
+  @include hover {
+    opacity: var(--tok-hover-opacity);
   }
 
   &:last-child {

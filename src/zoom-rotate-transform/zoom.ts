@@ -5,47 +5,85 @@ import { clamp } from '@/ui/utility/clamp';
 type Binding = {
   matrix: Ref<{
     scale: number;
+    translate: { x: number; y: number };
   }>;
-  onEvent: (val: number) => void;
+  onEvent: (scale: number, x: number, y: number) => void;
 };
 
 type Fn = (...args: any) => void;
 
 const dict = new Map<HTMLElement, Fn[]>();
 
-function distance(a: Touch, b: Touch) {
-  return Math.sqrt(
-    Math.pow(a.clientX - b.clientX, 2) + Math.pow(a.clientY - b.clientY, 2)
-  );
+function distance(a: PPointer, b: PPointer) {
+  return Math.sqrt(Math.pow(a.cx - b.cx, 2) + Math.pow(a.cy - b.cy, 2));
 }
+
+type PPointer = { id: number; x: number; y: number; cx: number; cy: number };
 
 function mounted(el: HTMLElement, { value }: DirectiveBinding<Binding>) {
   let _distance = 0;
   let _scale = value.matrix.value.scale;
 
-  function start(e: TouchEvent) {
-    if (e.touches.length >= 2) {
-      const a = e.touches[0];
-      const b = e.touches[1];
+  let _pntrs: PPointer[] = [];
+
+  function start(e: PointerEvent) {
+    up(e);
+
+    _pntrs.push({
+      id: e.pointerId,
+      x: e.offsetX,
+      y: e.offsetY,
+      cx: e.clientX,
+      cy: e.clientY,
+    });
+
+    if (_pntrs.length > 1) {
+      const a = _pntrs[0];
+      const b = _pntrs[1];
 
       _distance = distance(a, b);
       _scale = value.matrix.value.scale;
     }
   }
 
-  function move(e: TouchEvent) {
-    if (e.touches.length > 1) {
-      const a = e.touches[0];
-      const b = e.touches[1];
-
-      const d = distance(a, b);
-
-      const factor = d / _distance;
-
-      const s = _scale * factor;
-
-      value.onEvent(clamp(s, 0.2, 50));
+  function move(e: PointerEvent) {
+    if (_pntrs.length < 2) {
+      return;
     }
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    _pntrs = _pntrs.map((item) =>
+      item.id === e.pointerId
+        ? {
+            id: e.pointerId,
+            x: e.offsetX,
+            y: e.offsetY,
+            cx: e.clientX,
+            cy: e.clientY,
+          }
+        : item
+    );
+
+    const a = _pntrs[0];
+    const b = _pntrs[1];
+
+    const d = distance(a, b);
+    const s = (_scale * d) / _distance;
+    const ns = clamp(s, 1, 5);
+
+    const oldScale = value.matrix.value.scale;
+    const pos = value.matrix.value.translate;
+
+    const x = (ns / oldScale) * (pos.x - e.offsetX) + e.offsetX;
+    const y = (ns / oldScale) * (pos.y - e.offsetY) + e.offsetY;
+
+    value.onEvent(ns, x, y);
+  }
+
+  function up(e: PointerEvent) {
+    _pntrs = _pntrs.filter(({ id }) => id !== e.pointerId);
   }
 
   function wheel(e: WheelEvent) {
@@ -62,16 +100,31 @@ function mounted(el: HTMLElement, { value }: DirectiveBinding<Binding>) {
 
     step = delta < 0 ? -step : step;
 
-    const _value = clamp(value.matrix.value.scale + step, 0.2, 50);
+    const oldScale = value.matrix.value.scale;
+    const newScale = clamp(oldScale + step, 1, 5);
 
-    value.onEvent(_value);
+    const pos = value.matrix.value.translate;
+
+    const x = (newScale / oldScale) * (pos.x - e.offsetX) + e.offsetX;
+    const y = (newScale / oldScale) * (pos.y - e.offsetY) + e.offsetY;
+
+    value.onEvent(newScale, x, y);
   }
 
-  el.addEventListener('touchstart', start);
-  el.addEventListener('touchmove', move);
+  function touchmove(e: TouchEvent) {
+    if (e.cancelable) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  }
+
+  el.addEventListener('pointerdown', start);
+  el.addEventListener('pointermove', move);
+  el.addEventListener('pointerup', up);
+  el.addEventListener('touchmove', touchmove);
   el.addEventListener('wheel', wheel);
 
-  dict.set(el, [start, move, wheel]);
+  dict.set(el, [start, move, up, touchmove, wheel]);
 }
 
 function beforeUnmount(el: HTMLElement) {
@@ -81,9 +134,11 @@ function beforeUnmount(el: HTMLElement) {
     return;
   }
 
-  el.removeEventListener('touchstart', q[0]);
-  el.removeEventListener('touchmove', q[1]);
-  el.removeEventListener('wheel', q[2]);
+  el.removeEventListener('pointerdown', q[0]);
+  el.removeEventListener('pointermove', q[1]);
+  el.removeEventListener('pointerup', q[2]);
+  el.removeEventListener('touchmove', q[3]);
+  el.removeEventListener('wheel', q[4]);
 
   dict.delete(el);
 }

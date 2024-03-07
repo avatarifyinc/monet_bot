@@ -1,6 +1,13 @@
 <template>
-  <button class="tok-button" :data-appearance="appearance" :data-size="size">
-    <svg-icon v-if="icon" :name="icon" />
+  <button
+    class="tok-button"
+    :data-appearance="appearance"
+    :data-size="size"
+    :disabled="disabled"
+  >
+    <svg-icon v-if="icon" :name="icon" :size="iconSize" />
+
+    <slot />
   </button>
 </template>
 
@@ -26,6 +33,8 @@ withDefaults(defineProps<FlatButtonProps>(), FlatButtonDefaultProps);
   justify-content: center;
   align-items: center;
 
+  flex-direction: column;
+
   box-sizing: border-box;
 
   -webkit-user-select: none;
@@ -38,14 +47,17 @@ withDefaults(defineProps<FlatButtonProps>(), FlatButtonDefaultProps);
 
   &[data-size='m'] {
     height: var(--tok-height-m);
-    width: var(--tok-height-m);
-
-    border-radius: 100%;
+    font: var(--tok-font-xs);
   }
 
   &[data-appearance='primary'] {
-    background: var(--tok-background-color-64);
-    color: var(--tok-text-color);
+    background: transparent;
+    color: var(--tok-primary);
+  }
+
+  &[data-appearance='flat'] {
+    background: transparent;
+    color: var(--tok-text-color-48);
   }
 
   @include hover {

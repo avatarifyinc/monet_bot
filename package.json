@@ -9,7 +9,6 @@
   },
   "dependencies": {
     "@twa-dev/sdk": "^7.0.0",
-    "pinia": "^2.0.0-rc.10",
     "vue": "^3.3.4",
     "vue-router": "^4.2.5"
   },
