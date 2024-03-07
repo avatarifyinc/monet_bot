@@ -100,7 +100,7 @@ const drawingAreaRef = ref<HTMLElement | null>(null);
 const loadedImage = ref<HTMLImageElement | null>(null);
 
 onMounted(() => {
-  import('@/assets/images/test-photo.jpg').then((m) => {
+  import('@/assets/images/edit-eraser.jpg').then((m) => {
     const _img = new Image();
 
     _img.onload = () => {

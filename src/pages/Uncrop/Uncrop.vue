@@ -63,11 +63,14 @@
 import { computed, ref, watch } from 'vue';
 
 import { MainButton } from '@/telegram/MainButton';
+import { useTelegramSdk } from '@/telegram/use/sdk';
 import { OverscrollDirective as vOverscroll } from '@/ui/overscroll';
 import { clamp } from '@/ui/utility/clamp';
 import { TransformDirective as vTransform } from '@/zoom-rotate-transform/transform';
 
 import Resizer from './Resizer.vue';
+
+const sdk = useTelegramSdk();
 
 const areaRef = ref<HTMLElement | null>(null);
 const imageRef = ref<HTMLImageElement | null>(null);
@@ -306,6 +309,10 @@ const onPan = ([dx, dy]: [number, number]) => {
 
   verticalAlignment.value = r.va;
   horizontalAligment.value = r.ha;
+
+  if (r.ha || r.va) {
+    sdk.HapticFeedback.impactOccurred('light');
+  }
 
   toStyle.value = clampUpdatedStyle(r.s);
 };
