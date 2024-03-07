@@ -2,13 +2,16 @@
 import { computed, onMounted, ref, watch } from 'vue';
 
 import { MainButton } from '@/telegram/MainButton';
+import { useTelegramSdk } from '@/telegram/use/sdk';
 import { FlatButton } from '@/ui/FlatButton';
 import { InputText } from '@/ui/InputText';
+import { clamp } from '@/ui/utility/clamp';
 import { ZoomDirective as vZoom } from '@/zoom-rotate-transform/zoom';
 
 import { useState } from './useState';
 
 const { stack, undoIndex } = useState();
+const sdk = useTelegramSdk();
 
 const inputValue = ref('');
 const canvasRef = ref<HTMLCanvasElement | null>(null);
@@ -18,11 +21,14 @@ const matrix = ref({
   deg: 0,
 });
 
+const release = ref(false);
+
 const zoomStyle = computed(() => {
   const _matrix = matrix.value;
 
   return {
     position: 'relative',
+    transition: release.value ? 'transform 0.2s ease' : '',
     transformOrigin: '0 0',
     transform: `translate(${_matrix.translate.x}px, ${_matrix.translate.y}px) scale(${_matrix.scale})`,
   } as any;
@@ -168,16 +174,43 @@ const drawImageBackgroundOnCanvas = ([wh, canvas]: [
   }
 };
 
+let _timeout: ReturnType<typeof setTimeout> | null = null;
+
 const onZoomGesture = {
   matrix: matrix,
   onEvent: (scale: number, x: number, y: number) => {
+    if (release.value) {
+      return;
+    }
+
     const old = matrix.value;
 
     matrix.value = {
       ...old,
       scale,
-      translate: { x: scale === 1 ? 0 : x, y: scale === 1 ? 0 : y },
+      translate: { x, y },
     };
+  },
+  onRelease: () => {
+    const old = matrix.value;
+
+    if (old.scale < 1) {
+      sdk.HapticFeedback.impactOccurred('light');
+
+      matrix.value = {
+        ...old,
+        scale: clamp(old.scale, 1, 5),
+        translate: { x: 0, y: 0 },
+      };
+
+      release.value = true;
+
+      _timeout && clearTimeout(_timeout);
+
+      _timeout = setTimeout(() => {
+        release.value = false;
+      }, 200);
+    }
   },
 };
 

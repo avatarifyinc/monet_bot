@@ -8,6 +8,7 @@ type Binding = {
     translate: { x: number; y: number };
   }>;
   onEvent: (scale: number, x: number, y: number) => void;
+  onRelease: () => void;
 };
 
 type Fn = (...args: any) => void;
@@ -18,13 +19,27 @@ function distance(a: PPointer, b: PPointer) {
   return Math.sqrt(Math.pow(a.cx - b.cx, 2) + Math.pow(a.cy - b.cy, 2));
 }
 
-type PPointer = { id: number; x: number; y: number; cx: number; cy: number };
+function getCenter(a: PPointer, b: PPointer) {
+  return {
+    x: (a.x + b.x) / 2,
+    y: (a.y + b.y) / 2,
+  };
+}
+
+type PPointer = {
+  id: number;
+  x: number;
+  y: number;
+  cx: number;
+  cy: number;
+};
 
 function mounted(el: HTMLElement, { value }: DirectiveBinding<Binding>) {
   let _distance = 0;
   let _scale = value.matrix.value.scale;
 
   let _pntrs: PPointer[] = [];
+  let _prevCenter: Pick<PPointer, 'x' | 'y'> = { x: 0, y: 0 };
 
   function start(e: PointerEvent) {
     up(e);
@@ -43,6 +58,7 @@ function mounted(el: HTMLElement, { value }: DirectiveBinding<Binding>) {
 
       _distance = distance(a, b);
       _scale = value.matrix.value.scale;
+      _prevCenter = getCenter(a, b);
     }
   }
 
@@ -71,19 +87,34 @@ function mounted(el: HTMLElement, { value }: DirectiveBinding<Binding>) {
 
     const d = distance(a, b);
     const s = (_scale * d) / _distance;
-    const ns = clamp(s, 1, 5);
+    const ns = clamp(s, 0.6, 5);
+
+    const _pos = value.matrix.value.translate;
+
+    const _x = _pos.x;
+    const _y = _pos.y;
+
+    const _cc = getCenter(a, b);
+    const k = 0.1 + ((ns - 0.6) * (2 - 0.6)) / (5 - 0.6);
+
+    const _diffX = (_cc.x - _prevCenter.x) * k;
+    const _diffY = (_cc.y - _prevCenter.y) * k;
 
     const oldScale = value.matrix.value.scale;
-    const pos = value.matrix.value.translate;
 
-    const x = (ns / oldScale) * (pos.x - e.offsetX) + e.offsetX;
-    const y = (ns / oldScale) * (pos.y - e.offsetY) + e.offsetY;
+    const __aa = _x + _diffX;
+    const __bb = _y + _diffY;
+
+    const x = (ns / oldScale) * (__aa - _cc.x) + _cc.x;
+    const y = (ns / oldScale) * (__bb - _cc.y) + _cc.y;
 
     value.onEvent(ns, x, y);
   }
 
   function up(e: PointerEvent) {
     _pntrs = _pntrs.filter(({ id }) => id !== e.pointerId);
+
+    value.onRelease();
   }
 
   function wheel(e: WheelEvent) {
@@ -120,7 +151,8 @@ function mounted(el: HTMLElement, { value }: DirectiveBinding<Binding>) {
 
   el.addEventListener('pointerdown', start);
   el.addEventListener('pointermove', move);
-  el.addEventListener('pointerup', up);
+  document.addEventListener('pointerup', up);
+  el.addEventListener('pointercancel', up);
   el.addEventListener('touchmove', touchmove);
   el.addEventListener('wheel', wheel);
 
@@ -136,7 +168,8 @@ function beforeUnmount(el: HTMLElement) {
 
   el.removeEventListener('pointerdown', q[0]);
   el.removeEventListener('pointermove', q[1]);
-  el.removeEventListener('pointerup', q[2]);
+  document.removeEventListener('pointerup', q[2]);
+  el.removeEventListener('pointercancel', q[2]);
   el.removeEventListener('touchmove', q[3]);
   el.removeEventListener('wheel', q[4]);
 

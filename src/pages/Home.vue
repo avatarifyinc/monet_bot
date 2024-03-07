@@ -1,16 +1,8 @@
 <script setup lang="ts">
 import addReplace from '@/assets/video/cover-addreplace.mp4';
 import poster_addReplace from '@/assets/video/cover-addreplace.webp';
-import eraser from '@/assets/video/cover-eraser.mp4';
-import poster_eraser from '@/assets/video/cover-eraser.webp';
-import generate from '@/assets/video/cover-generate.mp4';
-import poster_generate from '@/assets/video/cover-generate.webp';
-import outfits from '@/assets/video/cover-outfits.mp4';
-import poster_outfits from '@/assets/video/cover-outfits.webp';
 import uncrop from '@/assets/video/cover-uncrop.mp4';
 import poster_uncrop from '@/assets/video/cover-uncrop.webp';
-import upscale from '@/assets/video/cover-upscale.mp4';
-import poster_upscale from '@/assets/video/cover-upscale.webp';
 
 const FEATURE_HEIGHT = '16.5rem';
 const STYLE = { minHeight: FEATURE_HEIGHT, width: '100%' };
@@ -19,39 +11,38 @@ const features = [
   {
     title: 'Add&Replace',
     video: addReplace,
-    path: '/draw',
+    path: '/addreplace',
     poster: poster_addReplace,
   },
-  {
-    title: 'AI Outfits',
-    video: outfits,
-    path: '/resize',
-    poster: poster_outfits,
-  },
-  {
-    title: 'AI Upscale',
-    video: upscale,
-    path: null,
-    poster: poster_upscale,
-  },
-  {
-    title: 'Eraser',
-    video: eraser,
-    path: null,
-    poster: poster_eraser,
-  },
+  // {
+  //   title: 'AI Outfits',
+  //   video: outfits,
+  //   poster: poster_outfits,
+  // },
+  // {
+  //   title: 'AI Upscale',
+  //   video: upscale,
+  //   path: null,
+  //   poster: poster_upscale,
+  // },
+  // {
+  //   title: 'Eraser',
+  //   video: eraser,
+  //   path: null,
+  //   poster: poster_eraser,
+  // },
   {
     title: 'Uncrop',
     video: uncrop,
-    path: null,
+    path: '/uncrop',
     poster: poster_uncrop,
   },
-  {
-    title: 'Generate image',
-    video: generate,
-    path: null,
-    poster: poster_generate,
-  },
+  // {
+  //   title: 'Generate image',
+  //   video: generate,
+  //   path: null,
+  //   poster: poster_generate,
+  // },
 ];
 </script>
 

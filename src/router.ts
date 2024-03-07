@@ -5,14 +5,14 @@ import {
   RouteRecordRaw,
 } from 'vue-router';
 
-import { drawRoute } from './pages/Draw/routes';
-import { resizeRoute } from './pages/Resize/routes';
-import { canvasRoute } from './pages/routes';
+import { addreplaceRoute } from './pages/Addreplace/routes';
+import { homeRoute } from './pages/routes';
+import { uncropRoute } from './pages/Uncrop/routes';
 
 const pages: RouteRecordRaw[] = ([] as RouteRecordRaw[])
-  .concat(canvasRoute)
-  .concat(drawRoute)
-  .concat(resizeRoute);
+  .concat(homeRoute)
+  .concat(addreplaceRoute)
+  .concat(uncropRoute);
 
 export const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL || '/'),
