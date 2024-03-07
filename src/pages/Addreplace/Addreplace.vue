@@ -28,6 +28,7 @@ const zoomStyle = computed(() => {
 
   return {
     position: 'relative',
+    display: 'inline-flex',
     transition: release.value ? 'transform 0.2s ease' : '',
     transformOrigin: '0 0',
     transform: `translate(${_matrix.translate.x}px, ${_matrix.translate.y}px) scale(${_matrix.scale})`,
@@ -606,6 +607,7 @@ const onSubmit = () => {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
 
   overflow: hidden;
 }
