@@ -313,10 +313,8 @@ const onPan = ([dx, dy]: [number, number]) => {
   toStyle.value = clampUpdatedStyle(r.s);
 };
 
-const q = computed(() => verticalAlignment.value || horizontalAligment.value);
-
-watch(q, (value) => {
-  if (value) {
+watch([verticalAlignment, horizontalAligment], ([a, b]) => {
+  if (a || b) {
     sdk.HapticFeedback.impactOccurred('light');
   }
 });
