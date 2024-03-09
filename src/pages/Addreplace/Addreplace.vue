@@ -601,8 +601,6 @@ const onSubmit = () => {
 }
 
 .drawingArea {
-  @include transparentBackground;
-
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -610,12 +608,14 @@ const onSubmit = () => {
   align-items: center;
 
   overflow: hidden;
+  background: var(--tok-text-color-08);
 }
 
 .tools {
   display: flex;
   justify-content: space-around;
   margin: 0.5rem -0.5rem;
+  padding: 0 0.5rem;
 }
 
 .toolsGroup {
@@ -640,6 +640,7 @@ const onSubmit = () => {
   display: flex;
   align-items: center;
   gap: 8px;
+  padding: 0 0.5rem 0.5rem;
 }
 
 .input {

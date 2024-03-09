@@ -85,6 +85,7 @@ $gap: var(--tok-padding-s);
   max-width: 100%;
   display: flex;
   flex-direction: column;
+  padding: 0.5rem;
 }
 
 .header {

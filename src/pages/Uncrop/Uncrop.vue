@@ -8,9 +8,14 @@
         flex: 1;
         justify-content: center;
         align-items: center;
+        background: var(--tok-text-color-08);
       "
     >
-      <div ref="areaRef" :class="$style.drawingArea" :data-ratio="active">
+      <div
+        ref="areaRef"
+        :class="$style.drawingArea"
+        :style="computedDrawingAreaStyle"
+      >
         <Resizer
           v-overscroll
           v-transform="onTransformGesture"
@@ -37,22 +42,28 @@
     </div>
 
     <div :class="$style.menu">
-      <button
-        v-for="item in sizes"
-        :key="item"
-        :class="$style.button"
-        :data-active="item === active"
-        @click="onUpdateRatio(item)"
-      >
-        <div :class="$style.button__ratio" :data-ratio="item">
-          <div :class="[$style.ratio, $style.ratio__lt]" />
-          <div :class="[$style.ratio, $style.ratio__rt]" />
-          <div :class="[$style.ratio, $style.ratio__bl]" />
-          <div :class="[$style.ratio, $style.ratio__br]" />
-        </div>
+      <div v-for="(g, i) in sizes" :key="i" :class="$style.menu__group">
+        <button
+          v-for="item in g"
+          :key="item.label"
+          :class="$style.button"
+          :data-active="item.label === active.label"
+          @click="onUpdateRatio(item)"
+        >
+          <div :class="$style.button__ratio" :data-ratio="item">
+            <div :class="[$style.ratio, $style.ratio__lt]" />
+            <div :class="[$style.ratio, $style.ratio__rt]" />
+            <div :class="[$style.ratio, $style.ratio__bl]" />
+            <div :class="[$style.ratio, $style.ratio__br]" />
+            <div
+              v-if="item.label === 'iPhone'"
+              :class="[$style.ratio, $style.ratio__iphone]"
+            />
+          </div>
 
-        <span :class="$style.button__label">{{ item }}</span>
-      </button>
+          <span :class="$style.button__label">{{ item }}</span>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -75,10 +86,25 @@ const sdk = useTelegramSdk();
 const areaRef = ref<HTMLElement | null>(null);
 const imageRef = ref<HTMLImageElement | null>(null);
 
-const sizes = ['default', '1:1', '4:5', '3:4', '2:3'] as const;
-const active = ref<(typeof sizes)[number]>(sizes[0]);
+class Ratio {
+  constructor(readonly w: number, readonly h: number, readonly label: string) {}
+
+  get style() {
+    return { aspectRatio: `${this.w}/${this.h}` };
+  }
+
+  get a() {
+    return this.w / this.h;
+  }
+
+  toString() {
+    return this.label;
+  }
+}
+
 const verticalAlignment = ref(false);
 const horizontalAligment = ref(false);
+const loaded = ref<number | null>(null);
 
 const refit = ref(NaN);
 
@@ -95,16 +121,92 @@ const fitted = computed(() => {
   const r = fitImageInArea(
     _image.width,
     _image.height,
-    _area.width - 20,
-    _area.height - 20
+    _area.width - 50,
+    _area.height - 50
   );
+
+  const s = Math.max(_image.width, _image.height);
 
   return {
     ...r,
     maxWidth: _area.width,
     maxHeight: _area.height,
+    s,
+    imageW: _image.width,
+    imageH: _image.height,
+    ratio: _image.width / _image.height,
   };
 });
+
+const sizes = computed(() => {
+  const _img = fitted.value;
+
+  return [
+    [new Ratio(_img?.imageW ?? 1, _img?.imageH ?? 1, 'Default')],
+    [
+      new Ratio(1, 1, '1:1'),
+      new Ratio(4, 5, '4:5'),
+      new Ratio(3, 4, '3:4'),
+      new Ratio(2, 3, '2:3'),
+      new Ratio(9, 16, '9:16'),
+    ],
+    [
+      new Ratio(9, 19.5, 'iPhone'),
+      new Ratio(9, 16, 'Tiktok'),
+      new Ratio(1, 1, 'Instagram'),
+      new Ratio(9, 16, 'Story'),
+    ],
+    [
+      new Ratio(4, 6, '4x6"'),
+      new Ratio(5, 7, '5x7"'),
+      new Ratio(8, 10, '8x10"'),
+      new Ratio(12, 20, 'Letter'),
+    ],
+  ] as const;
+});
+const active = ref<Ratio>(sizes.value[0][0]);
+
+const ima = computed(() => {
+  const _image = imageRef.value?.getBoundingClientRect();
+
+  return !!loaded.value && !!_image && [_image.width, _image.height];
+});
+
+const computedDrawingAreaStyle = computed(() => {
+  const _ima = ima.value;
+  const a = active.value;
+
+  if (!_ima) {
+    return a.style;
+  }
+
+  // const s = Math.max(_ima[0], _ima[1]);
+
+  if (a.a < 1) {
+    return a.style;
+    // return {
+    //   ...a.style,
+    //   width: `${s}px`,
+    //   height: `${s / a.a}px`,
+    // };
+  }
+
+  return a.style;
+});
+
+watch(
+  ima,
+  (value) => {
+    if (value) {
+      active.value = sizes.value[0][0];
+
+      setTimeout(() => {
+        refit.value = Date.now();
+      });
+    }
+  },
+  { immediate: true }
+);
 
 type ToStyle = {
   left: number;
@@ -131,7 +233,7 @@ watch(
         top: (value.maxHeight - value.height) / 2,
         width: value.width,
         height: value.height,
-        ratio: value.width / value.height,
+        ratio: value.ratio,
       };
     }
   },
@@ -284,8 +386,6 @@ const fitImageInArea = (iw: number, ih: number, rw: number, rh: number) => {
   return { width: newWidth, height: newHeight };
 };
 
-const loaded = ref<number | null>(null);
-
 const onImageLoad = () => {
   loaded.value = Date.now();
 };
@@ -348,28 +448,50 @@ const onTransformGesture = {
   display: flex;
   flex-direction: column;
 
-  aspect-ratio: 1/1;
-
   width: 100%;
+  max-height: calc(100vh - 114px);
 
   overflow: hidden;
 
-  &[data-ratio='default'],
-  &[data-ratio='1:1'] {
-    aspect-ratio: 1/1;
-  }
+  // aspect-ratio: 1/1;
 
-  &[data-ratio='4:5'] {
-    aspect-ratio: 4/5;
-  }
+  // &[data-ratio='4:5'] {
+  //   aspect-ratio: 4/5;
+  // }
 
-  &[data-ratio='3:4'] {
-    aspect-ratio: 3/4;
-  }
+  // &[data-ratio='3:4'] {
+  //   aspect-ratio: 3/4;
+  // }
 
-  &[data-ratio='2:3'] {
-    aspect-ratio: 2/3;
-  }
+  // &[data-ratio='2:3'] {
+  //   aspect-ratio: 2/3;
+  // }
+
+  // &[data-ratio='9:16'],
+  // &[data-ratio='Tiktok'],
+  // &[data-ratio='Story'] {
+  //   aspect-ratio: 9/16;
+  // }
+
+  // &[data-ratio='iPhone'] {
+  //   aspect-ratio: 9/19.5;
+  // }
+
+  // &[data-ratio='4x6"'] {
+  //   aspect-ratio: 4/6;
+  // }
+
+  // &[data-ratio='5x7"'] {
+  //   aspect-ratio: 5/7;
+  // }
+
+  // &[data-ratio='8x10"'] {
+  //   aspect-ratio: 8/10;
+  // }
+
+  // &[data-ratio='Letter'] {
+  //   aspect-ratio: 12/20;
+  // }
 }
 
 .align {
@@ -431,11 +553,33 @@ const onTransformGesture = {
 }
 
 .menu {
+  @include hidescroll;
+
   display: flex;
+  flex-wrap: nowrap;
   background: var(--tok-background-color);
-  padding: 1rem 0;
-  justify-content: space-around;
-  align-items: center;
+  padding: 1rem 0.5rem;
+  gap: 1rem;
+
+  overflow-x: auto;
+
+  &__group {
+    position: relative;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: nowrap;
+
+    &:after {
+      position: absolute;
+      content: '';
+      right: -0.5rem;
+      top: 0;
+      height: calc(100% - 1em - 0.5rem);
+      width: 1px;
+      background: var(--tok-text-color-16);
+    }
+  }
 }
 
 .ratio {
@@ -463,6 +607,14 @@ const onTransformGesture = {
     right: 0;
     bottom: 0;
   }
+
+  &__iphone {
+    height: 2px;
+    left: 50%;
+    top: 4px;
+    transform: translateX(-50%);
+    z-index: 10;
+  }
 }
 
 .button {
@@ -476,6 +628,7 @@ const onTransformGesture = {
   height: 5.125rem;
   align-items: center;
   justify-content: space-between;
+  margin: 0 0.75rem;
 
   &[data-active='true'] {
     .button__ratio {
@@ -501,10 +654,7 @@ const onTransformGesture = {
 
     cursor: pointer;
 
-    &[data-ratio='default'],
-    &[data-ratio='1:1'] {
-      aspect-ratio: 1/1;
-    }
+    aspect-ratio: 1/1;
 
     &[data-ratio='4:5'] {
       aspect-ratio: 4/5;
@@ -516,6 +666,32 @@ const onTransformGesture = {
 
     &[data-ratio='2:3'] {
       aspect-ratio: 2/3;
+    }
+
+    &[data-ratio='9:16'],
+    &[data-ratio='Tiktok'],
+    &[data-ratio='Story'] {
+      aspect-ratio: 9/16;
+    }
+
+    &[data-ratio='iPhone'] {
+      aspect-ratio: 9/19.5;
+    }
+
+    &[data-ratio='4x6"'] {
+      aspect-ratio: 4/6;
+    }
+
+    &[data-ratio='5x7"'] {
+      aspect-ratio: 5/7;
+    }
+
+    &[data-ratio='8x10"'] {
+      aspect-ratio: 8/10;
+    }
+
+    &[data-ratio='Letter'] {
+      aspect-ratio: 12/20;
     }
 
     &:before,
@@ -548,20 +724,7 @@ const onTransformGesture = {
   &__label {
     color: var(--tok-text-color-64);
     font: var(--tok-font-s);
-    text-transform: capitalize;
     margin-top: 0.5rem;
-  }
-
-  &:first-child {
-    &:after {
-      position: absolute;
-      content: '';
-      right: 0;
-      top: 0;
-      height: calc(100% - 1em - 0.5rem);
-      width: 1px;
-      background: var(--tok-text-color-16);
-    }
   }
 }
 

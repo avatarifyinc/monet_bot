@@ -2,9 +2,7 @@
   <root>
     <back-button v-if="showBackButton" @on-click="onBackButton" />
 
-    <div style="padding: 0.5rem">
-      <router-view />
-    </div>
+    <router-view />
   </root>
 </template>
 
