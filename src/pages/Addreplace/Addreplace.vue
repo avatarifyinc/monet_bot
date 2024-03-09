@@ -331,6 +331,8 @@ const setup = (
       return;
     }
 
+    wasDrawing = false;
+
     stack.value = stack.value.slice(0, undoIndex.value);
 
     const _ctx = el.getContext('2d');
