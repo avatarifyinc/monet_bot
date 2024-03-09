@@ -1,6 +1,7 @@
 <template>
   <div :class="$style.wrapper">
     <div
+      ref="availableRef"
       style="
         position: relative;
         display: flex;
@@ -108,6 +109,8 @@ const loaded = ref<number | null>(null);
 
 const refit = ref(NaN);
 
+const availableRef = ref<HTMLElement | null>(null);
+
 const fitted = computed(() => {
   const _area = areaRef.value?.getBoundingClientRect();
   const _image = imageRef.value?.getBoundingClientRect();
@@ -175,23 +178,25 @@ const ima = computed(() => {
 const computedDrawingAreaStyle = computed(() => {
   const _ima = ima.value;
   const a = active.value;
+  const _available = availableRef.value;
 
-  if (!_ima) {
+  if (!_ima || !_available) {
     return a.style;
   }
 
-  // const s = Math.max(_ima[0], _ima[1]);
+  const rect = _available.getBoundingClientRect();
+  const defaultRatioBehavior = (rect.width * 1) / a.a;
 
-  if (a.a < 1) {
+  if (defaultRatioBehavior < rect.height) {
     return a.style;
-    // return {
-    //   ...a.style,
-    //   width: `${s}px`,
-    //   height: `${s / a.a}px`,
-    // };
   }
 
-  return a.style;
+  const clampedWidth = rect.height * a.a;
+
+  return {
+    ...a.style,
+    width: `${clampedWidth}px`,
+  };
 });
 
 watch(
@@ -450,48 +455,10 @@ const onTransformGesture = {
 
   width: 100%;
   max-height: calc(100vh - 114px);
+  border: 1px inset var(--tok-text-color-16);
+  box-sizing: border-box;
 
   overflow: hidden;
-
-  // aspect-ratio: 1/1;
-
-  // &[data-ratio='4:5'] {
-  //   aspect-ratio: 4/5;
-  // }
-
-  // &[data-ratio='3:4'] {
-  //   aspect-ratio: 3/4;
-  // }
-
-  // &[data-ratio='2:3'] {
-  //   aspect-ratio: 2/3;
-  // }
-
-  // &[data-ratio='9:16'],
-  // &[data-ratio='Tiktok'],
-  // &[data-ratio='Story'] {
-  //   aspect-ratio: 9/16;
-  // }
-
-  // &[data-ratio='iPhone'] {
-  //   aspect-ratio: 9/19.5;
-  // }
-
-  // &[data-ratio='4x6"'] {
-  //   aspect-ratio: 4/6;
-  // }
-
-  // &[data-ratio='5x7"'] {
-  //   aspect-ratio: 5/7;
-  // }
-
-  // &[data-ratio='8x10"'] {
-  //   aspect-ratio: 8/10;
-  // }
-
-  // &[data-ratio='Letter'] {
-  //   aspect-ratio: 12/20;
-  // }
 }
 
 .align {
