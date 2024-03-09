@@ -51,7 +51,7 @@
           :data-active="item.label === active.label"
           @click="onUpdateRatio(item)"
         >
-          <div :class="$style.button__ratio" :data-ratio="item">
+          <div :class="$style.button__ratio" :style="item.style">
             <div :class="[$style.ratio, $style.ratio__lt]" />
             <div :class="[$style.ratio, $style.ratio__rt]" />
             <div :class="[$style.ratio, $style.ratio__bl]" />
@@ -59,6 +59,12 @@
             <div
               v-if="item.label === 'iPhone'"
               :class="[$style.ratio, $style.ratio__iphone]"
+            />
+
+            <svg-icon
+              v-if="item.rotatable && item.label === active.label"
+              name="rotate"
+              :class="$style.ratio__rotate"
             />
           </div>
 
@@ -77,6 +83,7 @@ import { computed, ref, watch } from 'vue';
 import { MainButton } from '@/telegram/MainButton';
 import { useTelegramSdk } from '@/telegram/use/sdk';
 import { OverscrollDirective as vOverscroll } from '@/ui/overscroll';
+import { SvgIcon } from '@/ui/SvgIcon';
 import { clamp } from '@/ui/utility/clamp';
 import { TransformDirective as vTransform } from '@/zoom-rotate-transform/transform';
 
@@ -88,10 +95,19 @@ const areaRef = ref<HTMLElement | null>(null);
 const imageRef = ref<HTMLImageElement | null>(null);
 
 class Ratio {
-  constructor(readonly w: number, readonly h: number, readonly label: string) {}
+  constructor(
+    readonly w: number,
+    readonly h: number,
+    readonly label: string,
+    readonly rotatable = false
+  ) {}
 
   get style() {
     return { aspectRatio: `${this.w}/${this.h}` };
+  }
+
+  get rstyle() {
+    return this.rotatable ? { aspectRatio: `${this.h}/${this.w}` } : this.style;
   }
 
   get a() {
@@ -150,24 +166,25 @@ const sizes = computed(() => {
       new Ratio(1, 1, '1:1'),
       new Ratio(4, 5, '4:5'),
       new Ratio(3, 4, '3:4'),
-      new Ratio(2, 3, '2:3'),
-      new Ratio(9, 16, '9:16'),
+      new Ratio(2, 3, '2:3', true),
+      new Ratio(9, 16, '9:16', true),
     ],
     [
       new Ratio(9, 19.5, 'iPhone'),
-      new Ratio(9, 16, 'Tiktok'),
+      new Ratio(9, 16, 'Tiktok', true),
       new Ratio(1, 1, 'Instagram'),
-      new Ratio(9, 16, 'Story'),
+      new Ratio(9, 16, 'Story', true),
     ],
     [
       new Ratio(4, 6, '4x6"'),
-      new Ratio(5, 7, '5x7"'),
+      new Ratio(5, 7, '5x7"', true),
       new Ratio(8, 10, '8x10"'),
-      new Ratio(12, 20, 'Letter'),
+      new Ratio(12, 20, 'Letter', true),
     ],
   ] as const;
 });
 const active = ref<Ratio>(sizes.value[0][0]);
+const rotated = ref(false);
 
 const ima = computed(() => {
   const _image = imageRef.value?.getBoundingClientRect();
@@ -179,22 +196,26 @@ const computedDrawingAreaStyle = computed(() => {
   const _ima = ima.value;
   const a = active.value;
   const _available = availableRef.value;
+  const _rotated = rotated.value;
 
   if (!_ima || !_available) {
     return a.style;
   }
 
   const rect = _available.getBoundingClientRect();
-  const defaultRatioBehavior = (rect.width * 1) / a.a;
+  const ratio = a.rotatable && _rotated ? 1 / a.a : a.a;
+
+  const defaultRatioBehavior = rect.width / ratio;
+  const s = _rotated ? a.rstyle : a.style;
 
   if (defaultRatioBehavior < rect.height) {
-    return a.style;
+    return s;
   }
 
-  const clampedWidth = rect.height * a.a;
+  const clampedWidth = rect.height * ratio;
 
   return {
-    ...a.style,
+    ...s,
     width: `${clampedWidth}px`,
   };
 });
@@ -395,7 +416,13 @@ const onImageLoad = () => {
   loaded.value = Date.now();
 };
 
-const onUpdateRatio = (ratio: any) => {
+const onUpdateRatio = (ratio: typeof active.value) => {
+  if (ratio.rotatable && active.value.label === ratio.label) {
+    rotated.value = !rotated.value;
+  } else {
+    rotated.value = false;
+  }
+
   active.value = ratio;
 
   setTimeout(() => {
@@ -582,6 +609,15 @@ const onTransformGesture = {
     transform: translateX(-50%);
     z-index: 10;
   }
+
+  &__rotate {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 3;
+    color: var(--tok-primary);
+  }
 }
 
 .button {
@@ -620,46 +656,6 @@ const onTransformGesture = {
     margin: auto 0;
 
     cursor: pointer;
-
-    aspect-ratio: 1/1;
-
-    &[data-ratio='4:5'] {
-      aspect-ratio: 4/5;
-    }
-
-    &[data-ratio='3:4'] {
-      aspect-ratio: 3/4;
-    }
-
-    &[data-ratio='2:3'] {
-      aspect-ratio: 2/3;
-    }
-
-    &[data-ratio='9:16'],
-    &[data-ratio='Tiktok'],
-    &[data-ratio='Story'] {
-      aspect-ratio: 9/16;
-    }
-
-    &[data-ratio='iPhone'] {
-      aspect-ratio: 9/19.5;
-    }
-
-    &[data-ratio='4x6"'] {
-      aspect-ratio: 4/6;
-    }
-
-    &[data-ratio='5x7"'] {
-      aspect-ratio: 5/7;
-    }
-
-    &[data-ratio='8x10"'] {
-      aspect-ratio: 8/10;
-    }
-
-    &[data-ratio='Letter'] {
-      aspect-ratio: 12/20;
-    }
 
     &:before,
     &:after {
