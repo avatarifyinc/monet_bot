@@ -46,6 +46,9 @@ const items = computed(() => {
 onMounted(() => {
   loading.value = true;
 
+  alertsService.show(sdk.initData);
+  alertsService.show(sdk.initDataUnsafe);
+
   api.loadOutfits
     .execute()
     .then((response) => {
