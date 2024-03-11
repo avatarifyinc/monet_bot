@@ -30,9 +30,7 @@
     text-color="#ffffff"
     text="Generate"
     @on-click="onSubmit"
-  >
-    Generate
-  </main-button>
+  />
 </template>
 
 <script setup lang="ts">
@@ -86,7 +84,8 @@ const onSubmit = () => {
 @import '@/styles/local.scss';
 
 .wrapper {
-  padding: 0.5rem;
+  padding: 1rem;
+  margin-top: 1rem;
 }
 
 .container {
@@ -98,6 +97,6 @@ const onSubmit = () => {
   overflow: auto;
 
   gap: 0.375rem;
-  padding: 0 0.5rem;
+  padding: 0 1rem;
 }
 </style>
