@@ -7,19 +7,75 @@
       paintbrush in&nbsp;a&nbsp;whimsical street scene&raquo;
     </p>
 
-    <main-button
-      color="#007aff"
-      text-color="#ffffff"
-      text="Generate"
-      @on-click="onSubmit"
-    >
-      Generate
-    </main-button>
+    <input-textarea v-model="text" style="margin-bottom: 1rem" />
   </div>
+
+  <div :class="$style.container">
+    <flat-button
+      v-for="item in items"
+      :key="item.type"
+      :appearance="active === item.type ? 'primary' : 'secondary'"
+      size="s"
+      shape="rounded"
+      @click="active = item.type"
+    >
+      <span style="font-weight: 600">
+        {{ item.type }}&nbsp;&bull;&nbsp;{{ item.ratio }}
+      </span>
+    </flat-button>
+  </div>
+
+  <main-button
+    color="#007aff"
+    text-color="#ffffff"
+    text="Generate"
+    @on-click="onSubmit"
+  >
+    Generate
+  </main-button>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue';
+
 import { MainButton } from '@/telegram/MainButton';
+import { FlatButton } from '@/ui/FlatButton';
+import { InputTextarea } from '@/ui/InputTextarea';
+
+const text = ref('');
+
+const items = [
+  {
+    type: 'Widescreen',
+    ratio: '16:9',
+  },
+  {
+    type: 'Vertical',
+    ratio: '9:16',
+  },
+  {
+    type: 'Square',
+    ratio: '1:1',
+  },
+  {
+    type: 'Photo',
+    ratio: '4:3',
+  },
+  {
+    type: 'Portrait',
+    ratio: '4:5',
+  },
+  {
+    type: 'Landscape',
+    ratio: '3:2',
+  },
+  {
+    type: 'Cinematic',
+    ratio: '21:9',
+  },
+];
+
+const active = ref(items[0].type);
 
 const onSubmit = () => {
   // todo
@@ -27,7 +83,21 @@ const onSubmit = () => {
 </script>
 
 <style lang="scss" module>
+@import '@/styles/local.scss';
+
 .wrapper {
   padding: 0.5rem;
+}
+
+.container {
+  @include hidescroll;
+
+  display: flex;
+  flex-wrap: nowrap;
+
+  overflow: auto;
+
+  gap: 0.375rem;
+  padding: 0 0.5rem;
 }
 </style>
