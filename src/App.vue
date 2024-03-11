@@ -63,6 +63,8 @@ watch(theme, setThemeAttribute, { immediate: true });
 watch(
   () => route.query,
   (value) => {
+    console.log(value);
+
     if (typeof value.generation_id === 'string') {
       submitState.value = {
         generation_id: value.generation_id,
