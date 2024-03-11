@@ -121,7 +121,6 @@ const onSubmit = (item: DTOOutfitItem) => {
   min-width: calc(50% - 0.5rem);
   max-width: calc(50% - 0.5rem);
 
-  color: var(--tok-text-color);
   cursor: pointer;
   text-align: center;
 
@@ -141,7 +140,7 @@ const onSubmit = (item: DTOOutfitItem) => {
     width: 100%;
     height: 100%;
 
-    background: linear-gradient(transparent, var(--tok-text-color));
+    background: linear-gradient(transparent, var(--tok-dark));
   }
 
   @include hover {
