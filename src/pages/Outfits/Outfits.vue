@@ -51,9 +51,7 @@ onMounted(() => {
     .then((response) => {
       dto.value = response as any;
     })
-    .catch((error) => {
-      alertsService.show(error);
-
+    .catch(() => {
       alertsService.show('Failed to load outfits. Try again', {
         type: 'error',
       });
