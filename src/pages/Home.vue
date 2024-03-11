@@ -3,6 +3,8 @@ import addReplace from '@/assets/video/cover-addreplace.mp4';
 import poster_addReplace from '@/assets/video/cover-addreplace.webp';
 import eraser from '@/assets/video/cover-eraser.mp4';
 import poster_eraser from '@/assets/video/cover-eraser.webp';
+// import generate from '@/assets/video/cover-generate.mp4';
+// import poster_generate from '@/assets/video/cover-generate.webp';
 import uncrop from '@/assets/video/cover-uncrop.mp4';
 import poster_uncrop from '@/assets/video/cover-uncrop.webp';
 
@@ -42,7 +44,7 @@ const features = [
   // {
   //   title: 'Generate image',
   //   video: generate,
-  //   path: null,
+  //   path: '/generateimage',
   //   poster: poster_generate,
   // },
 ];
