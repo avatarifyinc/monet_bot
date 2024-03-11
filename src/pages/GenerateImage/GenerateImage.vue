@@ -7,7 +7,7 @@
       paintbrush in&nbsp;a&nbsp;whimsical street scene&raquo;
     </p>
 
-    <input-textarea v-model="text" style="margin-bottom: 1rem" />
+    <input-textarea v-model="text" />
   </div>
 
   <div :class="$style.container">
