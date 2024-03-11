@@ -7,8 +7,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, watch } from 'vue';
-import { useRouter } from 'vue-router';
+import { computed, onMounted, provide, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
 import { BackButton } from '@/telegram/BackButton';
 import { useTelegramSdk } from '@/telegram/use/sdk';
@@ -16,10 +16,17 @@ import { useTheme } from '@/telegram/use/theme';
 import { Root } from '@/ui/Root';
 import { noop } from '@/ui/utility/noop';
 
+import { SUBMIT_STATE } from './tokens';
+
 const tg = useTelegramSdk();
 
 const router = useRouter();
+const route = useRoute();
 const theme = useTheme();
+
+const submitState = ref({});
+
+provide(SUBMIT_STATE, submitState);
 
 onMounted(() => {
   document.body.onclick = noop;
@@ -53,4 +60,15 @@ const setThemeAttribute = (theme: 'dark' | 'light') => {
 };
 
 watch(theme, setThemeAttribute, { immediate: true });
+watch(
+  () => route.query,
+  (value) => {
+    if (typeof value.generation_id === 'string') {
+      submitState.value = {
+        generation_id: value.generation_id,
+      };
+    }
+  },
+  { immediate: true }
+);
 </script>

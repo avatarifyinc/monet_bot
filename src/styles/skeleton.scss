@@ -1,0 +1,52 @@
+.tok-skeleton {
+    position: relative;
+    pointer-events: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    overflow: hidden;
+    background-color: var(--tok-text-color-08) !important;
+    color: transparent !important;
+    cursor: default !important;
+    -webkit-mask-image: -webkit-radial-gradient(center, white, black);
+    mask-image: -webkit-radial-gradient(center, white, black);
+  
+    & > * {
+      opacity: 0;
+    }
+  
+    &::after {
+      content: "";
+      display: block;
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      transform: translateX(-100%);
+  
+      background: linear-gradient(
+                      90deg,
+                      transparent,
+                      var(--tok-text-color-16),
+                      transparent
+      );
+      animation: mdsSkeletonAnimation 2s infinite normal none running linear;
+      inset: 0;
+    }
+  
+    @keyframes mdsSkeletonAnimation {
+      100% {
+        transform: translateX(100%);
+      }
+    }
+  
+    &_short {
+      width: 50%;
+    }
+  
+    &_not-border {
+      border: none !important;
+    }
+  }
