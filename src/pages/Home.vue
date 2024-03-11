@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import addReplace from '@/assets/video/cover-addreplace.mp4';
 import poster_addReplace from '@/assets/video/cover-addreplace.webp';
+import eraser from '@/assets/video/cover-eraser.mp4';
+import poster_eraser from '@/assets/video/cover-eraser.webp';
 import uncrop from '@/assets/video/cover-uncrop.mp4';
 import poster_uncrop from '@/assets/video/cover-uncrop.webp';
 
@@ -9,7 +11,7 @@ const STYLE = { minHeight: FEATURE_HEIGHT, width: '100%' };
 
 const features = [
   {
-    title: 'Add&Replace',
+    title: 'Add & Replace',
     video: addReplace,
     path: '/addreplace',
     poster: poster_addReplace,
@@ -25,12 +27,12 @@ const features = [
   //   path: null,
   //   poster: poster_upscale,
   // },
-  // {
-  //   title: 'Eraser',
-  //   video: eraser,
-  //   path: null,
-  //   poster: poster_eraser,
-  // },
+  {
+    title: 'Eraser',
+    video: eraser,
+    path: '/eraser',
+    poster: poster_eraser,
+  },
   {
     title: 'Uncrop',
     video: uncrop,
@@ -48,7 +50,7 @@ const features = [
 
 <template>
   <div :class="$style.wrapper">
-    <h1 :class="$style.title">AI Edits</h1>
+    <h1 :class="$style.title">AI Tools</h1>
     <div :class="$style.featureList">
       <div
         v-for="feature in features"
@@ -79,7 +81,7 @@ const features = [
 </template>
 
 <style module lang="scss">
-$gap: var(--tok-padding-s);
+$gap: var(--tok-padding-m);
 
 .wrapper {
   max-width: 100%;
@@ -96,7 +98,7 @@ $gap: var(--tok-padding-s);
 }
 
 .title {
-  font: var(--tok-font-h1);
+  font: var(--tok-font-h3);
   margin-bottom: $gap;
 }
 

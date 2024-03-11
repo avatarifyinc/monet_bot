@@ -5,14 +5,24 @@ import {
   RouteRecordRaw,
 } from 'vue-router';
 
-import { addreplaceRoute } from './pages/Addreplace/routes';
-import { homeRoute } from './pages/routes';
-import { uncropRoute } from './pages/Uncrop/routes';
-
-const pages: RouteRecordRaw[] = ([] as RouteRecordRaw[])
-  .concat(homeRoute)
-  .concat(addreplaceRoute)
-  .concat(uncropRoute);
+const pages: RouteRecordRaw[] = [
+  {
+    path: '',
+    component: () => import('@/pages/Home.vue'),
+  },
+  {
+    path: '/addreplace',
+    component: () => import('@/pages/Addreplace/Addreplace.vue'),
+  },
+  {
+    path: '/uncrop',
+    component: () => import('@/pages/Uncrop/Uncrop.vue'),
+  },
+  {
+    path: '/eraser',
+    component: () => import('@/pages/Eraser/Eraser.vue'),
+  },
+];
 
 export const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL || '/'),
