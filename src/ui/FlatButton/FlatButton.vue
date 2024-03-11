@@ -213,7 +213,7 @@ const computedComponent = computed(() => {
     }
   }
 
-  &:hover {
+  @include hover {
     opacity: var(--tok-hover-opacity);
   }
 

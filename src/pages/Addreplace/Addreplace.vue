@@ -616,10 +616,10 @@ const onSubmit = () => {
     </div>
 
     <main-button
-      v-if="!popupOpened"
       color="#007aff"
       text-color="#ffffff"
       text="Generate"
+      :disabled="popupOpened"
       @on-click="onSubmit"
     />
 
