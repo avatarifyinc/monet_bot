@@ -5,6 +5,8 @@ import eraser from '@/assets/video/cover-eraser.mp4';
 import poster_eraser from '@/assets/video/cover-eraser.webp';
 import generate from '@/assets/video/cover-generate.mp4';
 import poster_generate from '@/assets/video/cover-generate.webp';
+import outfits from '@/assets/video/cover-outfits.mp4';
+import poster_outfits from '@/assets/video/cover-outfits.webp';
 import uncrop from '@/assets/video/cover-uncrop.mp4';
 import poster_uncrop from '@/assets/video/cover-uncrop.webp';
 
@@ -18,11 +20,12 @@ const features = [
     path: '/addreplace',
     poster: poster_addReplace,
   },
-  // {
-  //   title: 'AI Outfits',
-  //   video: outfits,
-  //   poster: poster_outfits,
-  // },
+  {
+    title: 'AI Outfits',
+    video: outfits,
+    path: '/outfits',
+    poster: poster_outfits,
+  },
   // {
   //   title: 'AI Upscale',
   //   video: upscale,
@@ -59,11 +62,7 @@ const features = [
         :key="feature.title"
         :class="$style.feature"
       >
-        <component
-          :is="feature.path ? 'router-link' : 'div'"
-          :to="feature.path"
-          :style="STYLE"
-        >
+        <router-link :to="feature.path" :style="STYLE">
           <video
             autoplay
             muted
@@ -76,7 +75,7 @@ const features = [
           </video>
 
           <h2 class="tok-text_l">{{ feature.title }}</h2>
-        </component>
+        </router-link>
       </div>
     </div>
   </div>

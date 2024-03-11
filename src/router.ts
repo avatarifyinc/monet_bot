@@ -26,6 +26,10 @@ const pages: RouteRecordRaw[] = [
     path: '/generateimage',
     component: () => import('@/pages/GenerateImage/GenerateImage.vue'),
   },
+  {
+    path: '/outfits',
+    component: () => import('@/pages/Outfits/Outfits.vue'),
+  },
 ];
 
 export const router = createRouter({
