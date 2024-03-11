@@ -29,6 +29,8 @@
     color="#007aff"
     text-color="#ffffff"
     text="Generate"
+    :progress="loading"
+    :disabled="loading"
     @on-click="onSubmit"
   />
 </template>
@@ -37,10 +39,18 @@
 import { ref } from 'vue';
 
 import { MainButton } from '@/telegram/MainButton';
+import { useTelegramSdk } from '@/telegram/use/sdk';
 import { FlatButton } from '@/ui/FlatButton';
 import { InputTextarea } from '@/ui/InputTextarea';
+import { useAlerts } from '@/ui/use/alerts';
+import { useApi } from '@/use/useApi';
+
+const api = useApi();
+const alertsService = useAlerts();
+const sdk = useTelegramSdk();
 
 const text = ref('');
+const loading = ref(false);
 
 const items = [
   {
@@ -76,7 +86,31 @@ const items = [
 const active = ref(items[0].type);
 
 const onSubmit = () => {
-  // todo
+  const value = text.value.trim();
+
+  if (!value) {
+    alertsService.show('Write something in the field', {
+      type: 'error',
+    });
+
+    return;
+  }
+
+  loading.value = true;
+
+  api.txt2img
+    .execute({ text: value })
+    .then(() => {
+      sdk.close();
+    })
+    .catch(() => {
+      alertsService.show('Something went wrong. Try again', {
+        type: 'error',
+      });
+    })
+    .finally(() => {
+      loading.value = false;
+    });
 };
 </script>
 

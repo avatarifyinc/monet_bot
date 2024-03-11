@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { inject, ref } from 'vue';
+
 import addReplace from '@/assets/video/cover-addreplace.mp4';
 import poster_addReplace from '@/assets/video/cover-addreplace.webp';
 import eraser from '@/assets/video/cover-eraser.mp4';
@@ -9,9 +11,21 @@ import outfits from '@/assets/video/cover-outfits.mp4';
 import poster_outfits from '@/assets/video/cover-outfits.webp';
 import uncrop from '@/assets/video/cover-uncrop.mp4';
 import poster_uncrop from '@/assets/video/cover-uncrop.webp';
+import upscale from '@/assets/video/cover-upscale.mp4';
+import poster_upscale from '@/assets/video/cover-upscale.webp';
+import { useTelegramSdk } from '@/telegram/use/sdk';
+import { SUBMIT_STATE } from '@/tokens';
+import { SvgIcon } from '@/ui/SvgIcon';
+import { useAlerts } from '@/ui/use/alerts';
+import { useApi } from '@/use/useApi';
 
-const FEATURE_HEIGHT = '16.5rem';
-const STYLE = { minHeight: FEATURE_HEIGHT, width: '100%' };
+const sdk = useTelegramSdk();
+const alertsService = useAlerts({ autoCloseOnUnmount: true });
+const api = useApi();
+
+const submitState = inject(SUBMIT_STATE)!;
+
+const loadingUpscale = ref(false);
 
 const features = [
   {
@@ -21,17 +35,17 @@ const features = [
     poster: poster_addReplace,
   },
   {
-    title: 'AI Outfits',
+    title: 'Outfits',
     video: outfits,
     path: '/outfits',
     poster: poster_outfits,
   },
-  // {
-  //   title: 'AI Upscale',
-  //   video: upscale,
-  //   path: null,
-  //   poster: poster_upscale,
-  // },
+  {
+    title: 'Upscale',
+    video: upscale,
+    path: 'upscale',
+    poster: poster_upscale,
+  },
   {
     title: 'Eraser',
     video: eraser,
@@ -51,87 +65,123 @@ const features = [
     poster: poster_generate,
   },
 ];
+
+const onClick = (item: string) => {
+  if (item === 'upscale') {
+    if (loadingUpscale.value) {
+      return;
+    }
+
+    loadingUpscale.value = true;
+
+    api.upscale
+      .execute({ generation_id: submitState.value!.generation_id as string })
+      .then(() => {
+        sdk.close();
+      })
+      .catch(() => {
+        alertsService.show('Failed to upscale image. Try again', {
+          type: 'error',
+        });
+      })
+      .finally(() => {
+        loadingUpscale.value = false;
+      });
+  }
+};
 </script>
 
 <template>
   <div :class="$style.wrapper">
-    <h1 :class="$style.title">AI Tools</h1>
-    <div :class="$style.featureList">
-      <div
+    <h3 style="margin-bottom: 0.5rem">AI Tools</h3>
+
+    <div :class="$style.items">
+      <component
         v-for="feature in features"
         :key="feature.title"
-        :class="$style.feature"
+        :is="feature.path === 'upscale' ? 'button' : 'router-link'"
+        :to="feature.path"
+        :class="$style.card"
+        @click="onClick(feature.path)"
       >
-        <router-link :to="feature.path" :style="STYLE">
-          <video
-            autoplay
-            muted
-            loop
-            playsinline
-            preload="auto"
-            :poster="feature.poster"
-          >
-            <source :src="feature.video" type="video/mp4" />
-          </video>
+        <video
+          autoplay
+          muted
+          loop
+          playsinline
+          preload="auto"
+          :poster="feature.poster"
+          :class="$style.card__video"
+        >
+          <source :src="feature.video" type="video/mp4" />
+        </video>
 
-          <h2 class="tok-text_l">{{ feature.title }}</h2>
-        </router-link>
-      </div>
+        <p :class="$style.card__name">
+          {{ feature.title }}
+          <svg-icon
+            v-if="feature.path === 'upscale' && loadingUpscale"
+            name="spinner"
+          />
+        </p>
+      </component>
     </div>
   </div>
 </template>
 
 <style module lang="scss">
-$gap: var(--tok-padding-m);
+@import '@/styles/local.scss';
 
 .wrapper {
-  max-width: 100%;
-  display: flex;
-  flex-direction: column;
   padding: 0.5rem;
 }
 
-.header {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  align-items: center;
-}
-
-.title {
-  font: var(--tok-font-h3);
-  margin-bottom: $gap;
-}
-
-.featureList {
-  overflow: hidden;
+.items {
   display: flex;
   flex-wrap: wrap;
-  gap: $gap;
+  gap: 1rem;
 }
 
-.feature {
-  height: v-bind(FEATURE_HEIGHT);
-  width: calc(50% - $gap / 2);
+.card {
+  @include clearbutton;
+  @include transition(transform);
+
   position: relative;
-  border-radius: var(--tok-radius-l);
+  display: block;
+
+  min-width: calc(50% - 0.5rem);
+  max-width: calc(50% - 0.5rem);
+
+  aspect-ratio: 1/1.2;
+  color: var(--tok-white);
+  border-radius: var(--tok-radius-m);
   overflow: hidden;
 
-  & video {
+  cursor: pointer;
+
+  &__video {
     position: absolute;
-    max-height: 100%;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
-  & h2 {
+  &__name {
     position: absolute;
-    text-align: center;
-    width: 100%;
-    padding: var(--tok-padding-m);
+
+    display: flex;
+    align-items: center;
+
     bottom: var(--tok-padding-s);
-    color: var(--tok-white);
+    left: var(--tok-padding-m);
+
+    font: var(--tok-font-s);
+  }
+
+  @include hover {
+    transform: scale(1.05);
+    opacity: 1;
   }
 }
 </style>

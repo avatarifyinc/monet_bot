@@ -77,8 +77,24 @@ export function useApi() {
     { generation_id: string; preset: string; title: string }
   >('/api/v1/outfits', 'POST', beforeHeaders);
 
+  const txt2img = useFetch<void, { text: string }>(
+    '/api/v1/text-to-image',
+    'POST',
+    beforeHeaders
+  );
+
+  const upscale = useFetch<void, { generation_id: string }>(
+    '/api/v1/upscale',
+    'POST',
+    beforeHeaders
+  );
+
   return {
     loadOutfits,
     sendOutfit,
+
+    txt2img,
+
+    upscale,
   };
 }
