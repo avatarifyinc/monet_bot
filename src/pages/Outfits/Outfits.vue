@@ -4,8 +4,6 @@
       Choose the style <svg-icon v-if="submitLoading" name="spinner" />
     </h3>
 
-    <div>Init data: {{ sdk.initData }}</div>
-
     <div :class="$style.container">
       <button
         v-for="item in items"
