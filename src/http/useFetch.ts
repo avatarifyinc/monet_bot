@@ -1,5 +1,7 @@
 import { getCurrentScope, onBeforeUnmount } from 'vue';
 
+import { useTelegramSdk } from '@/telegram/use/sdk';
+
 import { useApiEndpointResolver } from './useApiEndpointResolver';
 
 type Fn = () => void;
@@ -22,6 +24,7 @@ export function useFetch<
   bodyFormat?: (d: TRequest) => any
 ) {
   const apiEndpoint = useApiEndpointResolver();
+  const sdk = useTelegramSdk();
 
   let oldController: AbortController | null = null;
 
@@ -74,6 +77,10 @@ export function useFetch<
         if (response.ok || `${response.status}`.startsWith('2')) {
           return response.json().catch(() => undefined);
         }
+
+        sdk.showPopup({
+          message: JSON.stringify(response),
+        });
 
         return Promise.reject(response);
       })
