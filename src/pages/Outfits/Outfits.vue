@@ -4,6 +4,8 @@
       Choose the style <svg-icon v-if="submitLoading" name="spinner" />
     </h3>
 
+    <div>Init data: {{ sdk.initData }}</div>
+
     <div :class="$style.container">
       <button
         v-for="item in items"
@@ -71,7 +73,7 @@ const onSubmit = (item: DTOOutfitItem) => {
   api.sendOutfit
     .execute({
       preset: item.preset,
-      title: item.name,
+      name: item.name,
       generation_id: (submitState.value as any).generation_id || '',
     })
     .then(() => {
