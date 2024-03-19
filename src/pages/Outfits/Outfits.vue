@@ -51,13 +51,9 @@ onMounted(() => {
   api.loadOutfits
     .execute()
     .then((response) => {
-      dto.value = response as any;
+      dto.value = response;
     })
-    .catch((error) => {
-      sdk.showPopup({
-        message: JSON.stringify(error),
-      });
-
+    .catch(() => {
       alertsService.show('Failed to load outfits. Try again', {
         type: 'error',
       });
