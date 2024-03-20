@@ -1,21 +1,30 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, inject, onMounted, ref, watch } from 'vue';
 
+import { clampCanvasSize, drawingToMask } from '@/canvasUtils';
 import { MainButton } from '@/telegram/MainButton';
 import { useTelegramSdk } from '@/telegram/use/sdk';
+import { SUBMIT_STATE } from '@/tokens';
 import { FlatButton } from '@/ui/FlatButton';
 import { InputText } from '@/ui/InputText';
 import { Popup } from '@/ui/Popup';
 import { Slider } from '@/ui/Slider';
 import { Toggle } from '@/ui/Toggle';
+import { useAlerts } from '@/ui/use/alerts';
 import { clamp } from '@/ui/utility/clamp';
+import { useApi } from '@/use/useApi';
 import { ZoomDirective as vZoom } from '@/zoom-rotate-transform/zoom';
 
 import { useState } from './useState';
 
 const { stack, undoIndex } = useState();
 const sdk = useTelegramSdk();
+const alertsService = useAlerts();
+const api = useApi();
 
+const submitState = inject(SUBMIT_STATE)!;
+
+const loading = ref(false);
 const popupOpened = ref(false);
 const sliderOption = ref(0);
 const forceInsert = ref(false);
@@ -183,7 +192,7 @@ const drawImageBackgroundOnCanvas = ([wh, canvas]: [
   canvas.style.width = `${wh.width}px`;
   canvas.style.height = `${wh.height}px`;
 
-  if (canvas !== sideCanvasRef.value) {
+  if (canvas === canvasRef.value) {
     ctx.drawImage(_image, 0, 0, wh.width * pr, wh.height * pr);
   }
 
@@ -527,7 +536,7 @@ const onSubmit = () => {
   const wh = fittedImageInCanvas.value;
   const _ctx = sideContext.value;
 
-  if (!a || !b || !wh || !_ctx) {
+  if (!a || !b || !wh || !_ctx || !loadedImage.value) {
     return;
   }
 
@@ -538,23 +547,61 @@ const onSubmit = () => {
     return;
   }
 
+  loading.value = true;
+
   drawImageBackgroundOnCanvas([wh, _canvas]);
 
-  __ctx.globalAlpha = 0.6;
+  const canvasSize = clampCanvasSize({
+    width: loadedImage.value.width,
+    height: loadedImage.value.height,
+  });
+
+  _canvas.width = canvasSize.width;
+  _canvas.height = canvasSize.height;
 
   __ctx.drawImage(
     b,
     0,
     0,
-    b.width / window.devicePixelRatio,
-    b.height / window.devicePixelRatio
+    b.width,
+    b.height,
+    0,
+    0,
+    canvasSize.width,
+    canvasSize.height
   );
 
-  __ctx.globalAlpha = 1;
+  drawingToMask(_canvas);
 
   _canvas.toBlob((bl) => {
-    // todo
-    console.log(bl);
+    if (bl) {
+      api.addReplace
+        .execute({
+          original_image_id: (submitState.value?.generation_id as string) || '',
+          prompt: inputValue.value,
+          masked_image: bl,
+          negative_prompt: negativePrompt.value,
+          image_strength: sliderOption.value,
+          force_insert: forceInsert.value,
+        })
+        .then(() => {
+          sdk.close();
+        })
+        .catch(() => {
+          alertsService.show('Failed to create mask. Try again', {
+            type: 'error',
+          });
+        })
+        .finally(() => {
+          loading.value = false;
+        });
+    } else {
+      alertsService.show('Failed to create mask. Try again', {
+        type: 'error',
+      });
+
+      loading.value = true;
+    }
   });
 };
 </script>
@@ -619,7 +666,8 @@ const onSubmit = () => {
       color="#007aff"
       text-color="#ffffff"
       text="Generate"
-      :disabled="popupOpened"
+      :disabled="popupOpened || loading"
+      :progress="loading"
       @on-click="onSubmit"
     />
 

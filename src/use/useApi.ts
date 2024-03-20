@@ -85,6 +85,41 @@ export function useApi() {
     beforeHeaders
   );
 
+  const addReplace = useFetch<
+    void,
+    {
+      original_image_id: string;
+      negative_prompt: string;
+      prompt: string;
+      masked_image: Blob;
+      image_strength: number;
+      force_insert: boolean;
+    }
+  >(
+    (request) => {
+      const q = new URLSearchParams();
+
+      Object.keys(request).forEach((key) => {
+        if (key !== 'masked_image') {
+          q.set(key, `${(request as any)[key]}`);
+        }
+      });
+
+      return `/api/v1/add-replace?${q.toString()}`;
+    },
+    'POST',
+    beforeHeaders,
+    undefined,
+    true,
+    (request) => {
+      const fd = new FormData();
+
+      fd.set('masked_image', request.masked_image);
+
+      return fd;
+    }
+  );
+
   return {
     loadOutfits,
     sendOutfit,
@@ -92,5 +127,7 @@ export function useApi() {
     txt2img,
 
     upscale,
+
+    addReplace,
   };
 }
