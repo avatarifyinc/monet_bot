@@ -22,10 +22,10 @@ const pages: RouteRecordRaw[] = [
     path: '/eraser',
     component: () => import('@/pages/Eraser/Eraser.vue'),
   },
-  {
-    path: '/generateimage',
-    component: () => import('@/pages/GenerateImage/GenerateImage.vue'),
-  },
+  // {
+  //   path: '/generateimage',
+  //   component: () => import('@/pages/GenerateImage/GenerateImage.vue'),
+  // },
   {
     path: '/outfits',
     component: () => import('@/pages/Outfits/Outfits.vue'),

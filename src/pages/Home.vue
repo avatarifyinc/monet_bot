@@ -26,6 +26,7 @@ const api = useApi();
 const submitState = inject(SUBMIT_STATE)!;
 
 const loadingUpscale = ref(false);
+const loadingTexttoimg = ref(false);
 
 const features = [
   {
@@ -61,7 +62,7 @@ const features = [
   {
     title: 'Generate image',
     video: generate,
-    path: '/generateimage',
+    path: 'generateimage',
     poster: poster_generate,
   },
 ];
@@ -87,6 +88,26 @@ const onClick = (item: string) => {
       .finally(() => {
         loadingUpscale.value = false;
       });
+  } else if (item === 'generateimage') {
+    if (loadingTexttoimg.value) {
+      return;
+    }
+
+    loadingTexttoimg.value = true;
+
+    api.txt2img
+      .execute()
+      .then(() => {
+        sdk.close();
+      })
+      .catch(() => {
+        alertsService.show('Failed to generate image. Try again', {
+          type: 'error',
+        });
+      })
+      .finally(() => {
+        loadingTexttoimg.value = false;
+      });
   }
 };
 </script>
@@ -99,7 +120,7 @@ const onClick = (item: string) => {
       <component
         v-for="feature in features"
         :key="feature.title"
-        :is="feature.path === 'upscale' ? 'button' : 'router-link'"
+        :is="feature.path.startsWith('/') ? 'router-link' : 'button'"
         :to="feature.path"
         :class="$style.card"
         @click="onClick(feature.path)"
@@ -119,7 +140,13 @@ const onClick = (item: string) => {
         <p :class="$style.card__name">
           {{ feature.title }}
           <svg-icon
-            v-if="feature.path === 'upscale' && loadingUpscale"
+            v-if="
+              feature.path === 'upscale'
+                ? loadingUpscale
+                : feature.path === 'generateimage'
+                ? loadingTexttoimg
+                : false
+            "
             name="spinner"
           />
         </p>

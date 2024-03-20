@@ -1,5 +1,9 @@
 <template>
-  <span :class="[$style.icon, rotate && $style.icon_rotate]" :style="style">
+  <span
+    :class="[$style.icon, rotate && $style.icon_rotate]"
+    :data-name="name"
+    :style="style"
+  >
     <component
       :is="icon"
       tabindex="-1"
@@ -61,6 +65,22 @@ const style = computed(() => {
 
   &_rotate {
     transform: rotate(180deg);
+  }
+
+  &[data-name='spinner'] {
+    animation: tokSpinnerRotate 4s linear infinite;
+  }
+}
+
+@keyframes tokSpinnerRotate {
+  $initial-shift: rotate(-90deg);
+
+  0% {
+    transform: $initial-shift;
+  }
+
+  100% {
+    transform: $initial-shift rotate(4turn);
   }
 }
 </style>
