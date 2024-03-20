@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, inject, onMounted, ref, watch } from 'vue';
+import { computed, inject, ref, watch } from 'vue';
 
 import { clampCanvasSize, drawingToMask } from '@/canvasUtils';
 import { MainButton } from '@/telegram/MainButton';
@@ -9,6 +9,7 @@ import { FlatButton } from '@/ui/FlatButton';
 import { InputText } from '@/ui/InputText';
 import { Popup } from '@/ui/Popup';
 import { Slider } from '@/ui/Slider';
+import { SvgIcon } from '@/ui/SvgIcon';
 import { Toggle } from '@/ui/Toggle';
 import { useAlerts } from '@/ui/use/alerts';
 import { clamp } from '@/ui/utility/clamp';
@@ -135,18 +136,35 @@ const fitImageInCanvas = (iw: number, ih: number, rw: number, rh: number) => {
 const activeTool = ref<'draw' | 'eraser' | 'selection'>('draw');
 const drawingAreaRef = ref<HTMLElement | null>(null);
 const loadedImage = ref<HTMLImageElement | null>(null);
+const loadingImage = ref(false);
 
-onMounted(() => {
-  import('@/assets/images/edit-eraser.jpg').then((m) => {
-    const _img = new Image();
+watch(
+  submitState,
+  (value) => {
+    if (value && value.url) {
+      loadingImage.value = true;
 
-    _img.onload = () => {
-      loadedImage.value = _img;
-    };
+      const _img = new Image();
 
-    _img.src = m.default;
-  });
-});
+      _img.onload = () => {
+        loadedImage.value = _img;
+
+        loadingImage.value = false;
+      };
+
+      _img.onerror = () => {
+        alertsService.show('Failed to load image. Try reload the page', {
+          type: 'error',
+        });
+
+        loadingImage.value = false;
+      };
+
+      _img.src = value.url as string;
+    }
+  },
+  { immediate: true }
+);
 
 const fittedImageInCanvas = computed(() => {
   const area = drawingAreaRef.value;
@@ -616,6 +634,10 @@ const onSubmit = () => {
           style="position: absolute; left: 0; top: 0; opacity: 0.6"
         />
       </div>
+
+      <div v-if="loadingImage" :class="$style.spinner">
+        <svg-icon name="spinner" style="color: var(--tok-primary)" :size="64" />
+      </div>
     </div>
 
     <div :class="$style.tools">
@@ -791,5 +813,12 @@ const onSubmit = () => {
 
 .section {
   padding: 0.5rem;
+}
+
+.spinner {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
 }
 </style>
