@@ -18,6 +18,8 @@ export type InputTextProps<T = string | null> = {
     | 'decimal'
     | undefined;
   hasCleaner?: boolean;
+
+  forceFocus?: boolean;
 };
 
 export type InputTextEmits = {

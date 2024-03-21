@@ -58,7 +58,7 @@ const props = withDefaults(
 
 const emit = defineEmits<InputTextEmits>();
 
-const { invalid, disabled } = toRefs(props);
+const { invalid, disabled, forceFocus } = toRefs(props);
 
 const nativeRef = ref<HTMLInputElement | null>(null);
 
@@ -110,25 +110,28 @@ const focus = () => {
   nativeRef.value?.focus();
 };
 
-// let timeout: ReturnType<typeof setTimeout>;
+let timeout: ReturnType<typeof setTimeout>;
 
 // The default scroll behavior in the browser isn't enough.
 // We must maintain scrolling to this element because
 // there seems to be an issue with the layout inside Telegram,
 // particularly when the MainButton is visible.
-// watch([focused, nativeRef], ([_focused, _native], _, onCleanup) => {
-//   onCleanup(() => {
-//     timeout && clearTimeout(timeout);
-//   });
+watch(
+  [focused, nativeRef, forceFocus],
+  ([_focused, _native, _forceFocus], _, onCleanup) => {
+    onCleanup(() => {
+      timeout && clearTimeout(timeout);
+    });
 
-//   if (_focused && _native) {
-//     timeout = setTimeout(() => {
-//       _native?.scrollIntoView({
-//         behavior: 'smooth',
-//       });
-//     }, 200);
-//   }
-// });
+    if (_focused && _native && _forceFocus) {
+      timeout = setTimeout(() => {
+        _native?.scrollIntoView({
+          behavior: 'smooth',
+        });
+      }, 200);
+    }
+  }
+);
 
 watch(
   focused,
