@@ -687,7 +687,7 @@ const onSubmit = () => {
     <main-button
       color="#007aff"
       text-color="#ffffff"
-      text="Generate"
+      :text="popupOpened ? '' : 'Generate'"
       :disabled="popupOpened || loading"
       :progress="loading"
       @on-click="onSubmit"
