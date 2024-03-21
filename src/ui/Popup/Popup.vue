@@ -103,7 +103,7 @@ onBeforeUnmount(() => {
   min-width: 100%;
   width: 100%;
   max-width: 100%;
-  margin: auto 0 0;
+  margin: auto 0;
 }
 
 .content {

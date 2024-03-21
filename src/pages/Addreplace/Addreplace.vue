@@ -720,7 +720,6 @@ const onSubmit = () => {
 
       <input-text
         v-model="negativePrompt"
-        force-focus
         placeholder="What you don't want to generate?"
         style="margin-bottom: 1rem"
       />
