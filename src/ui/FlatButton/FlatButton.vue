@@ -6,7 +6,7 @@
     :data-size="size"
     :data-shape="computedShape"
     :data-loading="loading"
-    :disabled="disabled"
+    :disabled="disabled || loading"
     :href="href"
     :to="to"
   >
@@ -206,6 +206,8 @@ const computedComponent = computed(() => {
   }
 
   &[data-loading='true'] {
+    -webkit-text-fill-color: transparent;
+    --tok-disabled-opacity: 1;
     pointer-events: none;
 
     & > *:not(.spinner) {
