@@ -1,16 +1,27 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, inject, ref, watch } from 'vue';
 
+import { clampCanvasSize, drawingToMask } from '@/canvasUtils';
 import { MainButton } from '@/telegram/MainButton';
 import { useTelegramSdk } from '@/telegram/use/sdk';
+import { SUBMIT_STATE } from '@/tokens';
 import { FlatButton } from '@/ui/FlatButton';
+import { SvgIcon } from '@/ui/SvgIcon';
+import { useAlerts } from '@/ui/use/alerts';
 import { clamp } from '@/ui/utility/clamp';
+import { useApi } from '@/use/useApi';
 import { ZoomDirective as vZoom } from '@/zoom-rotate-transform/zoom';
 
 import { useState } from './useState';
 
 const { stack, undoIndex } = useState();
 const sdk = useTelegramSdk();
+const alertsService = useAlerts();
+const api = useApi();
+
+const submitState = inject(SUBMIT_STATE)!;
+
+const loading = ref(false);
 
 const canvasRef = ref<HTMLCanvasElement | null>(null);
 const matrix = ref({
@@ -96,18 +107,35 @@ const fitImageInCanvas = (iw: number, ih: number, rw: number, rh: number) => {
 const activeTool = ref<'draw' | 'eraser' | 'selection'>('draw');
 const drawingAreaRef = ref<HTMLElement | null>(null);
 const loadedImage = ref<HTMLImageElement | null>(null);
+const loadingImage = ref(false);
 
-onMounted(() => {
-  import('@/assets/images/edit-eraser.jpg').then((m) => {
-    const _img = new Image();
+watch(
+  submitState,
+  (value) => {
+    if (value && value.url) {
+      loadingImage.value = true;
 
-    _img.onload = () => {
-      loadedImage.value = _img;
-    };
+      const _img = new Image();
 
-    _img.src = m.default;
-  });
-});
+      _img.onload = () => {
+        loadedImage.value = _img;
+
+        loadingImage.value = false;
+      };
+
+      _img.onerror = () => {
+        alertsService.show('Failed to load image. Try reload the page', {
+          type: 'error',
+        });
+
+        loadingImage.value = false;
+      };
+
+      _img.src = value.url as string;
+    }
+  },
+  { immediate: true }
+);
 
 const fittedImageInCanvas = computed(() => {
   const area = drawingAreaRef.value;
@@ -153,7 +181,7 @@ const drawImageBackgroundOnCanvas = ([wh, canvas]: [
   canvas.style.width = `${wh.width}px`;
   canvas.style.height = `${wh.height}px`;
 
-  if (canvas !== sideCanvasRef.value) {
+  if (canvas === canvasRef.value) {
     ctx.drawImage(_image, 0, 0, wh.width * pr, wh.height * pr);
   }
 
@@ -497,7 +525,7 @@ const onSubmit = () => {
   const wh = fittedImageInCanvas.value;
   const _ctx = sideContext.value;
 
-  if (!a || !b || !wh || !_ctx) {
+  if (!a || !b || !wh || !_ctx || !loadedImage.value) {
     return;
   }
 
@@ -508,23 +536,57 @@ const onSubmit = () => {
     return;
   }
 
+  loading.value = true;
+
   drawImageBackgroundOnCanvas([wh, _canvas]);
 
-  __ctx.globalAlpha = 0.6;
+  const canvasSize = clampCanvasSize({
+    width: loadedImage.value.width,
+    height: loadedImage.value.height,
+  });
+
+  _canvas.width = canvasSize.width;
+  _canvas.height = canvasSize.height;
 
   __ctx.drawImage(
     b,
     0,
     0,
-    b.width / window.devicePixelRatio,
-    b.height / window.devicePixelRatio
+    b.width,
+    b.height,
+    0,
+    0,
+    canvasSize.width,
+    canvasSize.height
   );
 
-  __ctx.globalAlpha = 1;
+  drawingToMask(_canvas);
 
   _canvas.toBlob((bl) => {
-    // todo
-    console.log(bl);
+    if (bl) {
+      api.eraser
+        .execute({
+          original_image_id: (submitState.value?.generation_id as string) || '',
+          masked_image: bl,
+        })
+        .then(() => {
+          sdk.close();
+        })
+        .catch(() => {
+          alertsService.show('Failed to create mask. Try again', {
+            type: 'error',
+          });
+        })
+        .finally(() => {
+          loading.value = false;
+        });
+    } else {
+      alertsService.show('Failed to create mask. Try again', {
+        type: 'error',
+      });
+
+      loading.value = true;
+    }
   });
 };
 </script>
@@ -538,6 +600,10 @@ const onSubmit = () => {
           ref="sideCanvasRef"
           style="position: absolute; left: 0; top: 0; opacity: 0.6"
         />
+      </div>
+
+      <div v-if="loadingImage" :class="$style.spinner">
+        <svg-icon name="spinner" style="color: var(--tok-primary)" :size="64" />
       </div>
     </div>
 
@@ -572,6 +638,8 @@ const onSubmit = () => {
       color="#007aff"
       text-color="#ffffff"
       text="Generate"
+      :disabled="loading"
+      :progress="loading"
       @on-click="onSubmit"
     />
   </div>
@@ -625,5 +693,12 @@ const onSubmit = () => {
 
 .section {
   padding: 0.5rem;
+}
+
+.spinner {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
 }
 </style>

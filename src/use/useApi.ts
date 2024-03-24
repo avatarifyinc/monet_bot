@@ -85,6 +85,37 @@ export function useApi() {
     beforeHeaders
   );
 
+  const eraser = useFetch<
+    void,
+    {
+      original_image_id: string;
+      masked_image: Blob;
+    }
+  >(
+    (request) => {
+      const q = new URLSearchParams();
+
+      Object.keys(request).forEach((key) => {
+        if (key !== 'masked_image') {
+          q.set(key, `${(request as any)[key]}`);
+        }
+      });
+
+      return `/api/v1/eraser?${q.toString()}`;
+    },
+    'POST',
+    beforeHeaders,
+    undefined,
+    true,
+    (request) => {
+      const fd = new FormData();
+
+      fd.set('masked_image', request.masked_image);
+
+      return fd;
+    }
+  );
+
   const addReplace = useFetch<
     void,
     {
@@ -129,5 +160,7 @@ export function useApi() {
     upscale,
 
     addReplace,
+
+    eraser,
   };
 }
