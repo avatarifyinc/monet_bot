@@ -35,12 +35,9 @@
       @update:model-value="emit('update:negativePrompt', $event || '')"
     />
 
-    <label
-      for="__addreplaceForceInsert"
-      style="display: block; margin-bottom: 1rem"
-    >
+    <label for="ForceInsert" style="display: block; margin-bottom: 1rem">
       <toggle
-        id="__addreplaceForceInsert"
+        id="ForceInsert"
         size="m"
         :model-value="forceInsert"
         @update:model-value="emit('update:forceInsert', $event)"
@@ -58,7 +55,9 @@
         gap: 1rem;
       "
     >
-      <flat-button size="m" style="flex: 1" @click="onSave"> Save </flat-button>
+      <flat-button size="m" style="flex: 1" :loading="loading" @click="onSave">
+        Save
+      </flat-button>
 
       <flat-button appearance="secondary" style="flex: 1" @click="onReset">
         Reset
@@ -68,14 +67,14 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 
 import { FlatButton } from '@/ui/FlatButton';
 import { InputText } from '@/ui/InputText';
 import { Popup } from '@/ui/Popup';
 import { Slider } from '@/ui/Slider';
 import { Toggle } from '@/ui/Toggle';
-import { useApi } from '@/use/useApi';
+import { DTOSettings, useApi } from '@/use/useApi';
 
 const props = defineProps<{
   opened: boolean;
@@ -99,20 +98,51 @@ const resetState = {
 
 const api = useApi();
 
+const loading = ref(false);
+
+let dto: DTOSettings | null = null;
+
 onMounted(() => {
-  api.loadSettings.execute().then(console.log);
+  api.loadSettings
+    .execute()
+    .then((response) => {
+      if (response) {
+        dto = response;
+
+        emit('update:negativePrompt', response.negative_prompt || '');
+      }
+    })
+    .catch(() => null);
 });
 
 const onSave = () => {
-  emit('update:opened', false);
-  // api.saveSettings()
+  loading.value = true;
+
+  api.saveSettings
+    .execute(
+      dto
+        ? {
+            ...dto,
+            negative_prompt: props.negativePrompt,
+          }
+        : {
+            style: 'no style',
+            aspect_ratio: [],
+            negative_prompt: props.negativePrompt,
+          }
+    )
+    .then(() => {
+      emit('update:opened', false);
+    })
+    .finally(() => {
+      loading.value = false;
+    });
 };
 
 const onReset = () => {
-  //   sliderOption.value = 0;
-  //   forceInsert.value = false;
-  //   negativePrompt.value = '';
-  //   saved.value = false;
+  emit('update:forceInsert', resetState.forceInsert);
+  emit('update:imageStrength', resetState.imageStrength);
+  emit('update:negativePrompt', resetState.negativePrompt);
 };
 </script>
 

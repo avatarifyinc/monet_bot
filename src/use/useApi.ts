@@ -58,9 +58,9 @@ export type DTOOutfits = {
 };
 
 export type DTOSettings = {
-  style: string;
-  aspect_ratio: any[];
-  negative_prompt: string;
+  style: 'no style';
+  aspect_ratio: number[];
+  negative_prompt: string | null;
 };
 
 export function useApi() {
@@ -163,7 +163,7 @@ export function useApi() {
     beforeHeaders
   );
 
-  const saveSettings = useFetch<any, any>(
+  const saveSettings = useFetch<void, DTOSettings>(
     '/api/v1/endpoints/settings',
     'POST',
     beforeHeaders
