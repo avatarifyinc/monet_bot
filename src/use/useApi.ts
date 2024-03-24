@@ -57,6 +57,12 @@ export type DTOOutfits = {
   costumes: DTOOutfitItem[];
 };
 
+export type DTOSettings = {
+  style: string;
+  aspect_ratio: any[];
+  negative_prompt: string;
+};
+
 export function useApi() {
   const sdk = useTelegramSdk();
 
@@ -151,9 +157,24 @@ export function useApi() {
     }
   );
 
+  const loadSettings = useFetch<DTOSettings>(
+    '/api/v1/endpoints/settings',
+    'GET',
+    beforeHeaders
+  );
+
+  const saveSettings = useFetch<any, any>(
+    '/api/v1/endpoints/settings',
+    'POST',
+    beforeHeaders
+  );
+
   return {
     loadOutfits,
     sendOutfit,
+
+    loadSettings,
+    saveSettings,
 
     txt2img,
 

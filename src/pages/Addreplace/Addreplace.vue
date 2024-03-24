@@ -7,15 +7,13 @@ import { useTelegramSdk } from '@/telegram/use/sdk';
 import { SUBMIT_STATE } from '@/tokens';
 import { FlatButton } from '@/ui/FlatButton';
 import { InputText } from '@/ui/InputText';
-import { Popup } from '@/ui/Popup';
-import { Slider } from '@/ui/Slider';
 import { SvgIcon } from '@/ui/SvgIcon';
-import { Toggle } from '@/ui/Toggle';
 import { useAlerts } from '@/ui/use/alerts';
 import { clamp } from '@/ui/utility/clamp';
 import { useApi } from '@/use/useApi';
 import { ZoomDirective as vZoom } from '@/zoom-rotate-transform/zoom';
 
+import SettingsPopup from './SettingsPopup.vue';
 import { useState } from './useState';
 
 const { stack, undoIndex } = useState();
@@ -30,26 +28,6 @@ const popupOpened = ref(false);
 const sliderOption = ref(0);
 const forceInsert = ref(false);
 const negativePrompt = ref('');
-
-const saved = ref(false);
-
-const onReset = () => {
-  sliderOption.value = 0;
-  forceInsert.value = false;
-  negativePrompt.value = '';
-  saved.value = false;
-};
-
-const onSave = () => {
-  saved.value = true;
-  popupOpened.value = false;
-};
-
-watch(popupOpened, (value) => {
-  if (!value && !saved.value) {
-    onReset();
-  }
-});
 
 const inputValue = ref('');
 const canvasRef = ref<HTMLCanvasElement | null>(null);
@@ -693,64 +671,12 @@ const onSubmit = () => {
       @on-click="onSubmit"
     />
 
-    <popup v-model="popupOpened">
-      <div
-        style="
-          display: flex;
-          justify-content: space-between;
-          font: var(--tok-font-l);
-          margin-bottom: 0.5rem;
-        "
-      >
-        <h6>Image strength</h6>
-
-        <p style="color: var(--tok-primary)">{{ sliderOption }}</p>
-      </div>
-
-      <Slider
-        v-model="sliderOption"
-        :max="10"
-        :segments="0"
-        style="margin-bottom: 1rem"
-      />
-
-      <h6 style="font: var(--tok-font-l); margin-bottom: 0.5rem">
-        Negative prompt
-      </h6>
-
-      <input-text
-        v-model="negativePrompt"
-        placeholder="What you don't want to generate?"
-        style="margin-bottom: 1rem"
-      />
-
-      <label
-        for="__addreplaceForceInsert"
-        style="display: block; margin-bottom: 1rem"
-      >
-        <toggle v-model="forceInsert" id="__addreplaceForceInsert" size="m" />
-        <span style="font: var(--tok-font-l); margin-left: 0.5rem">
-          Force insert
-        </span>
-      </label>
-
-      <div
-        style="
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 1rem;
-        "
-      >
-        <flat-button size="m" style="flex: 1" @click="onSave">
-          Save
-        </flat-button>
-
-        <flat-button appearance="secondary" style="flex: 1" @click="onReset">
-          Reset
-        </flat-button>
-      </div>
-    </popup>
+    <SettingsPopup
+      v-model:opened="popupOpened"
+      v-model:force-insert="forceInsert"
+      v-model:image-strength="sliderOption"
+      v-model:negative-prompt="negativePrompt"
+    />
   </div>
 </template>
 
