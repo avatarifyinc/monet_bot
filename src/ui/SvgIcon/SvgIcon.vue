@@ -1,6 +1,7 @@
 <template>
   <span
-    :class="[$style.icon, rotate && $style.icon_rotate]"
+    class="tok-svg-icon"
+    :data-rotate="rotate"
     :data-name="name"
     :style="style"
   >
@@ -50,10 +51,10 @@ const style = computed(() => {
 });
 </script>
 
-<style lang="scss" module>
+<style lang="scss" scoped>
 @import '@/styles/local.scss';
 
-.icon {
+.tok-svg-icon {
   @include size(
     var(--tok-svg-icon-width, 1rem),
     var(--tok-svg-icon-height, 1rem)
@@ -68,7 +69,9 @@ const style = computed(() => {
   }
 
   &[data-name='spinner'] {
-    animation: tokSpinnerRotate 4s linear infinite;
+    & > svg {
+      animation: tokSpinnerRotate 4s linear infinite;
+    }
   }
 }
 
