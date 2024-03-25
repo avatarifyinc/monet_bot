@@ -1,10 +1,9 @@
 <template>
   <div>
-    <p>Failed to load image {{ context.data.generationId }}</p>
+    <p>Failed to load image</p>
 
     <flat-button
       v-if="context.data.generationId"
-      appearance="secondary"
       size="s"
       :loading="loading"
       @click="onTry"
