@@ -50,6 +50,8 @@ const onBackButton = () => {
 
   if (hasHistory) {
     router.back();
+  } else {
+    router.replace({ path: '/', query: route.query });
   }
 };
 
