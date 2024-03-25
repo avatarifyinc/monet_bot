@@ -73,7 +73,7 @@ export function useApi() {
   };
 
   const loadOutfits = useFetch<DTOOutfits>(
-    '/api/v1/outfits',
+    '/api/v1/configs/outfits',
     'GET',
     beforeHeaders
   );
@@ -83,10 +83,14 @@ export function useApi() {
     { generation_id: string; preset: string; name: string }
   >('/api/v1/outfits', 'POST', beforeHeaders);
 
-  const txt2img = useFetch('/api/v1/text-to-image', 'POST', beforeHeaders);
+  const txt2img = useFetch(
+    '/api/v1/generation/text-to-image',
+    'POST',
+    beforeHeaders
+  );
 
   const upscale = useFetch<void, { generation_id: string }>(
-    '/api/v1/upscale',
+    '/api/v1/generation/upscale',
     'POST',
     beforeHeaders
   );
@@ -107,7 +111,7 @@ export function useApi() {
         }
       });
 
-      return `/api/v1/eraser?${q.toString()}`;
+      return `/api/v1/generation/eraser?${q.toString()}`;
     },
     'POST',
     beforeHeaders,
@@ -142,7 +146,7 @@ export function useApi() {
         }
       });
 
-      return `/api/v1/add-replace?${q.toString()}`;
+      return `/api/v1/generation/add-replace?${q.toString()}`;
     },
     'POST',
     beforeHeaders,
@@ -158,14 +162,14 @@ export function useApi() {
   );
 
   const loadSettings = useFetch<DTOSettings>(
-    '/api/v1/endpoints/settings',
+    '/api/v1/settings/',
     'GET',
     beforeHeaders
   );
 
   const saveSettings = useFetch<void, DTOSettings>(
-    '/api/v1/endpoints/settings',
-    'POST',
+    '/api/v1/settings/',
+    'PUT',
     beforeHeaders
   );
 
