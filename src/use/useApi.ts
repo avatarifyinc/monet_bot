@@ -81,7 +81,7 @@ export function useApi() {
   const sendOutfit = useFetch<
     void,
     { generation_id: string; preset: string; name: string }
-  >('/api/v1/outfits', 'POST', beforeHeaders);
+  >('/api/v1/generation/outfits', 'POST', beforeHeaders);
 
   const txt2img = useFetch(
     '/api/v1/generation/text-to-image',
