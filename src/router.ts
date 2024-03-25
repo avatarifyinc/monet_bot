@@ -1,9 +1,4 @@
-import {
-  createRouter,
-  createWebHistory,
-  RouteLocationNormalized,
-  RouteRecordRaw,
-} from 'vue-router';
+import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 
 const pages: RouteRecordRaw[] = [
   {
@@ -41,7 +36,7 @@ export const router = createRouter({
   }),
 });
 
-router.afterEach((to: RouteLocationNormalized) => {
+router.afterEach((to) => {
   if (to.params.savedPosition) {
     return;
   }

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { inject, ref } from 'vue';
+import { computed, inject, ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 import addReplace from '@/assets/video/cover-addreplace.mp4';
 import poster_addReplace from '@/assets/video/cover-addreplace.webp';
@@ -22,53 +23,78 @@ import { useApi } from '@/use/useApi';
 const sdk = useTelegramSdk();
 const alertsService = useAlerts({ autoCloseOnUnmount: true });
 const api = useApi();
+const router = useRouter();
 
 const submitState = inject(SUBMIT_STATE)!;
 
 const loadingUpscale = ref(false);
 const loadingTexttoimg = ref(false);
 
-const features = [
-  {
-    title: 'Add & Replace',
-    video: addReplace,
-    path: '/addreplace',
-    poster: poster_addReplace,
-  },
-  {
-    title: 'Outfits',
-    video: outfits,
-    path: '/outfits',
-    poster: poster_outfits,
-  },
-  {
-    title: 'Upscale',
-    video: upscale,
-    path: 'upscale',
-    poster: poster_upscale,
-  },
-  {
-    title: 'Eraser',
-    video: eraser,
-    path: '/eraser',
-    poster: poster_eraser,
-  },
-  {
-    title: 'Uncrop',
-    video: uncrop,
-    path: '/uncrop',
-    poster: poster_uncrop,
-  },
-  {
-    title: 'Generate image',
-    video: generate,
-    path: 'generateimage',
-    poster: poster_generate,
-  },
-];
+const query = computed(() => router.currentRoute.value.query);
+
+const features = computed(() => {
+  const q = query.value;
+
+  return [
+    {
+      title: 'Add & Replace',
+      video: addReplace,
+      comp: 'router-link',
+      to: {
+        path: '/addreplace',
+        query: q,
+      },
+      poster: poster_addReplace,
+    },
+    {
+      title: 'Outfits',
+      video: outfits,
+      comp: 'router-link',
+      to: {
+        path: '/outfits',
+        query: q,
+      },
+      poster: poster_outfits,
+    },
+    {
+      title: 'Upscale',
+      video: upscale,
+      comp: 'button',
+      to: undefined,
+      poster: poster_upscale,
+    },
+    {
+      title: 'Eraser',
+      video: eraser,
+      comp: 'router-link',
+      to: {
+        path: '/eraser',
+        query: q,
+      },
+      poster: poster_eraser,
+    },
+    {
+      title: 'Uncrop',
+      video: uncrop,
+      comp: 'router-link',
+      to: {
+        path: '/uncrop',
+        query: q,
+      },
+      poster: poster_uncrop,
+    },
+    {
+      title: 'Generate image',
+      video: generate,
+      comp: 'button',
+      to: undefined,
+      poster: poster_generate,
+    },
+  ];
+});
 
 const onClick = (item: string) => {
-  if (item === 'upscale') {
+  if (item === 'Upscale') {
     if (loadingUpscale.value) {
       return;
     }
@@ -88,7 +114,7 @@ const onClick = (item: string) => {
       .finally(() => {
         loadingUpscale.value = false;
       });
-  } else if (item === 'generateimage') {
+  } else if (item === 'Generate image') {
     if (loadingTexttoimg.value) {
       return;
     }
@@ -120,10 +146,10 @@ const onClick = (item: string) => {
       <component
         v-for="feature in features"
         :key="feature.title"
-        :is="feature.path.startsWith('/') ? 'router-link' : 'button'"
-        :to="feature.path"
+        :is="feature.comp"
+        :to="feature.to"
         :class="$style.card"
-        @click="onClick(feature.path)"
+        @click="onClick(feature.title)"
       >
         <video
           autoplay
@@ -141,9 +167,9 @@ const onClick = (item: string) => {
           {{ feature.title }}
           <svg-icon
             v-if="
-              feature.path === 'upscale'
+              feature.title === 'Upscale'
                 ? loadingUpscale
-                : feature.path === 'generateimage'
+                : feature.title === 'Generate image'
                 ? loadingTexttoimg
                 : false
             "

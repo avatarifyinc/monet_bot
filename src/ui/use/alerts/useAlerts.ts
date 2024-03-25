@@ -1,4 +1,4 @@
-import { Component, inject } from 'vue';
+import { Component, inject, markRaw } from 'vue';
 
 import { AlertHostParams, ALERTS_HOST_TOKEN } from '@/ui/tokens';
 import { getElementId } from '@/ui/utility/getElementId';
@@ -23,7 +23,11 @@ export function useAlerts(config?: Config) {
   ) => {
     const id = getElementId();
 
-    instance?.show(id, content, params);
+    instance?.show(
+      id,
+      typeof content === 'string' ? content : markRaw(content),
+      params
+    );
 
     if (config?.autoCloseOnUnmount) {
       showedIds.push(id);
