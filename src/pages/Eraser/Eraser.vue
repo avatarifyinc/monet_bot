@@ -17,7 +17,7 @@ import { useState } from './useState';
 
 const { stack, undoIndex } = useState();
 const sdk = useTelegramSdk();
-const alertsService = useAlerts();
+const alertsService = useAlerts({ autoCloseOnUnmount: true });
 const api = useApi();
 
 const submitState = inject(SUBMIT_STATE)!;
