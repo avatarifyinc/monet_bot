@@ -71,9 +71,18 @@ watch(
     }
 
     if (typeof value.url === 'string') {
+      const f = value.url;
+      const q = new URLSearchParams();
+
+      Object.keys(value).forEach((item) => {
+        if (item.startsWith('X-Amz')) {
+          q.set(item, (value as any)[item]);
+        }
+      });
+
       submitState.value = {
         ...submitState.value,
-        url: value.url,
+        url: `${f}&${q.toString()}`,
       };
     }
   },

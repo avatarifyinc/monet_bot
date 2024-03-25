@@ -2,6 +2,7 @@
 import { computed, inject, ref, watch } from 'vue';
 
 import { clampCanvasSize, drawingToMask } from '@/canvasUtils';
+import { ImageLoadErrorAlert } from '@/components/ImageLoadErrorAlert';
 import { MainButton } from '@/telegram/MainButton';
 import { useTelegramSdk } from '@/telegram/use/sdk';
 import { SUBMIT_STATE } from '@/tokens';
@@ -124,8 +125,12 @@ watch(
       };
 
       _img.onerror = () => {
-        alertsService.show('Failed to load image. Try reload the page', {
+        alertsService.show(ImageLoadErrorAlert, {
           type: 'error',
+          data: {
+            generationId: submitState.value?.generation_id || '',
+          },
+          autoClose: false,
         });
 
         loadingImage.value = false;
