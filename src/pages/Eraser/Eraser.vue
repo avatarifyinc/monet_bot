@@ -128,7 +128,7 @@ watch(
         alertsService.show(ImageLoadErrorAlert, {
           type: 'error',
           data: {
-            generationId: submitState.value?.generation_id || '',
+            generation_id: submitState.value?.generation_id || '',
           },
           autoClose: false,
         });

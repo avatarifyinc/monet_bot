@@ -1,3 +1,48 @@
+<template>
+  <div :class="$style.wrapper">
+    <h3 style="margin-bottom: 0.5rem">AI Tools</h3>
+
+    <div :class="$style.items">
+      <component
+        v-for="feature in features"
+        :key="feature.title"
+        :is="feature.comp"
+        :to="feature.to"
+        :class="$style.card"
+        @click="onClick(feature.title)"
+      >
+        <video
+          autoplay
+          muted
+          loop
+          playsinline
+          preload="auto"
+          :poster="feature.poster"
+          :class="$style.card__video"
+        >
+          <source :src="feature.video" type="video/mp4" />
+        </video>
+
+        <div :class="$style.card__surface" />
+
+        <p :class="$style.card__name">
+          {{ feature.title }}
+          <svg-icon
+            v-if="
+              feature.title === 'Upscale'
+                ? loadingUpscale
+                : feature.title === 'Generate image'
+                ? loadingTexttoimg
+                : false
+            "
+            name="spinner"
+          />
+        </p>
+      </component>
+    </div>
+  </div>
+</template>
+
 <script setup lang="ts">
 import { computed, inject, ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -138,49 +183,6 @@ const onClick = (item: string) => {
 };
 </script>
 
-<template>
-  <div :class="$style.wrapper">
-    <h3 style="margin-bottom: 0.5rem">AI Tools</h3>
-
-    <div :class="$style.items">
-      <component
-        v-for="feature in features"
-        :key="feature.title"
-        :is="feature.comp"
-        :to="feature.to"
-        :class="$style.card"
-        @click="onClick(feature.title)"
-      >
-        <video
-          autoplay
-          muted
-          loop
-          playsinline
-          preload="auto"
-          :poster="feature.poster"
-          :class="$style.card__video"
-        >
-          <source :src="feature.video" type="video/mp4" />
-        </video>
-
-        <p :class="$style.card__name">
-          {{ feature.title }}
-          <svg-icon
-            v-if="
-              feature.title === 'Upscale'
-                ? loadingUpscale
-                : feature.title === 'Generate image'
-                ? loadingTexttoimg
-                : false
-            "
-            name="spinner"
-          />
-        </p>
-      </component>
-    </div>
-  </div>
-</template>
-
 <style module lang="scss">
 @import '@/styles/local.scss';
 
@@ -218,6 +220,19 @@ const onClick = (item: string) => {
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+
+  &__surface {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      0deg,
+      rgba(27, 27, 29, 0.56) 0%,
+      rgba(27, 27, 29, 0) 50%
+    );
   }
 
   &__name {

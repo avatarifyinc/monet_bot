@@ -17,7 +17,8 @@ import { ZoomDirective as vZoom } from '@/zoom-rotate-transform/zoom';
 import SettingsPopup from './SettingsPopup.vue';
 import { useState } from './useState';
 
-const { stack, undoIndex } = useState();
+const { stack, undoIndex, getPromptFromLs, setPromptToLs, pushStackToLs } =
+  useState();
 const sdk = useTelegramSdk();
 const alertsService = useAlerts({ autoCloseOnUnmount: true });
 const api = useApi();
@@ -30,13 +31,26 @@ const sliderOption = ref(0);
 const forceInsert = ref(false);
 const negativePrompt = ref('');
 
-const inputValue = ref('');
+const inputValue = ref(
+  getPromptFromLs((submitState.value?.generation_id as string) || '')
+);
 const canvasRef = ref<HTMLCanvasElement | null>(null);
 const matrix = ref({
   scale: 1,
   translate: { x: 0, y: 0 },
   deg: 0,
 });
+
+watch(inputValue, (value) => {
+  setPromptToLs(
+    (submitState.value?.generation_id as string) || '',
+    value || ''
+  );
+});
+
+// watch([stack, undoIndex], ([_, index]) => {
+//   pushStackToLs((submitState.value?.generation_id as string) || '', index);
+// });
 
 const release = ref(false);
 
@@ -135,7 +149,7 @@ watch(
         alertsService.show(ImageLoadErrorAlert, {
           type: 'error',
           data: {
-            generationId: submitState.value?.generation_id || '',
+            generation_id: submitState.value?.generation_id || '',
           },
           autoClose: false,
         });
@@ -589,7 +603,7 @@ const onSubmit = () => {
           sdk.close();
         })
         .catch(() => {
-          alertsService.show('Failed to create mask. Try again', {
+          alertsService.show('Failed to upload image. Try again', {
             type: 'error',
           });
         })
@@ -597,7 +611,7 @@ const onSubmit = () => {
           loading.value = false;
         });
     } else {
-      alertsService.show('Failed to create mask. Try again', {
+      alertsService.show('Failed to upload image. Try again', {
         type: 'error',
       });
 

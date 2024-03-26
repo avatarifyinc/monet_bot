@@ -21,15 +21,19 @@
           v-overscroll
           v-transform="onTransformGesture"
           :style="style"
+          :class="loadingImage && $style.hide"
           @size-changed="onSizeChanged"
         >
-          <img
-            ref="imageRef"
-            src="../../assets/images/edit-eraser.jpg"
-            :class="$style.photo"
-            @load="onImageLoad"
-          />
+          <img ref="imageRef" :src="imageSrc" :class="$style.photo" />
         </Resizer>
+
+        <div v-if="loadingImage" :class="$style.spinner">
+          <svg-icon
+            name="spinner"
+            style="color: var(--tok-primary)"
+            :size="64"
+          />
+        </div>
       </div>
 
       <div
@@ -74,25 +78,45 @@
     </div>
   </div>
 
-  <main-button color="#007aff" text-color="#ffffff" text="Generate" />
+  <main-button
+    color="#007aff"
+    text-color="#ffffff"
+    :text="computedMainButtonText"
+    :progress="loading"
+    :disabled="loading"
+    @on-click="onSubmit"
+  />
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed, inject, ref, watch } from 'vue';
 
+import { ImageLoadErrorAlert } from '@/components/ImageLoadErrorAlert';
 import { MainButton } from '@/telegram/MainButton';
 import { useTelegramSdk } from '@/telegram/use/sdk';
+import { SUBMIT_STATE } from '@/tokens';
 import { OverscrollDirective as vOverscroll } from '@/ui/overscroll';
 import { SvgIcon } from '@/ui/SvgIcon';
+import { useAlerts } from '@/ui/use/alerts';
 import { clamp } from '@/ui/utility/clamp';
+import { useApi } from '@/use/useApi';
 import { TransformDirective as vTransform } from '@/zoom-rotate-transform/transform';
 
 import Resizer from './Resizer.vue';
 
 const sdk = useTelegramSdk();
+const alertsService = useAlerts({ autoCloseOnUnmount: true });
+const api = useApi();
+
+const submitState = inject(SUBMIT_STATE)!;
 
 const areaRef = ref<HTMLElement | null>(null);
 const imageRef = ref<HTMLImageElement | null>(null);
+
+const loadingImage = ref(true);
+const loading = ref(false);
+
+const imageSrc = computed(() => (submitState?.value?.url as string) || '');
 
 class Ratio {
   constructor(
@@ -121,17 +145,23 @@ class Ratio {
 
 const verticalAlignment = ref(false);
 const horizontalAligment = ref(false);
-const loaded = ref<number | null>(null);
+const loadedImage = ref<HTMLImageElement | null>(null);
 
 const refit = ref(NaN);
 
 const availableRef = ref<HTMLElement | null>(null);
 
+const computedMainButtonText = computed(() => {
+  return loadingImage.value || !areaRef.value || !imageRef.value
+    ? ''
+    : 'Generate';
+});
+
 const fitted = computed(() => {
   const _area = areaRef.value?.getBoundingClientRect();
-  const _image = imageRef.value?.getBoundingClientRect();
+  const _image = loadedImage.value;
 
-  if (!_area || !_image || loaded.value === null) {
+  if (!_area || !_image) {
     return;
   }
 
@@ -186,10 +216,43 @@ const sizes = computed(() => {
 const active = ref<Ratio>(sizes.value[0][0]);
 const rotated = ref(false);
 
-const ima = computed(() => {
-  const _image = imageRef.value?.getBoundingClientRect();
+watch(
+  submitState,
+  (value) => {
+    if (value && value.url) {
+      loadingImage.value = true;
 
-  return !!loaded.value && !!_image && [_image.width, _image.height];
+      const _img = new Image();
+
+      _img.onload = () => {
+        loadedImage.value = _img;
+        loadingImage.value = false;
+
+        console.log('img width height', _img.width, _img.height);
+      };
+
+      _img.onerror = () => {
+        alertsService.show(ImageLoadErrorAlert, {
+          type: 'error',
+          data: {
+            generation_id: submitState.value?.generation_id || '',
+          },
+          autoClose: false,
+        });
+
+        loadingImage.value = false;
+      };
+
+      _img.src = value.url as string;
+    }
+  },
+  { immediate: true }
+);
+
+const ima = computed(() => {
+  const _image = loadedImage.value;
+
+  return !!_image && [_image.width, _image.height];
 });
 
 const computedDrawingAreaStyle = computed(() => {
@@ -412,10 +475,6 @@ const fitImageInArea = (iw: number, ih: number, rw: number, rh: number) => {
   return { width: newWidth, height: newHeight };
 };
 
-const onImageLoad = () => {
-  loaded.value = Date.now();
-};
-
 const onUpdateRatio = (ratio: typeof active.value) => {
   if (ratio.rotatable && active.value.label === ratio.label) {
     rotated.value = !rotated.value;
@@ -460,6 +519,58 @@ const onTransformGesture = {
     }
   },
 };
+
+const onSubmit = () => {
+  const _image = imageRef.value?.getBoundingClientRect();
+  const _fitted = fitted.value;
+  const _area = areaRef.value?.getBoundingClientRect();
+
+  if (!_image || loadingImage.value || !_fitted || !_area) {
+    return;
+  }
+
+  const r = fitImageInArea(
+    _image.width,
+    _image.height,
+    _area.width,
+    _area.height
+  );
+
+  const resizedCanvasHeight = (_fitted.imageH * _area.height) / r.height;
+  const resizedCanvasWidth = (_fitted.imageW * _area.width) / r.width;
+
+  const kw = resizedCanvasWidth / _area.width;
+  const kh = resizedCanvasHeight / _area.height;
+
+  const left = kw * (_image.left - _area.left);
+  const top = kh * (_image.top - _area.top);
+  const iw = kw * _image.width;
+  const ih = kh * _image.height;
+
+  loading.value = true;
+
+  api.uncrop
+    .execute({
+      generation_id: (submitState?.value?.generation_id as string) || '',
+      canvas_width: Math.round(resizedCanvasWidth),
+      canvas_height: Math.round(resizedCanvasHeight),
+      image_x: Math.round(left),
+      image_y: Math.round(top),
+      image_height: Math.round(ih),
+      image_width: Math.round(iw),
+    })
+    .then(() => {
+      sdk.close();
+    })
+    .catch(() => {
+      alertsService.show('Failed to uncrop image. Try again', {
+        type: 'error',
+      });
+    })
+    .finally(() => {
+      loading.value = false;
+    });
+};
 </script>
 
 <style module lang="scss">
@@ -470,6 +581,7 @@ const onTransformGesture = {
   max-width: 100%;
   display: flex;
   flex-direction: column;
+  z-index: 0;
 }
 
 .drawingArea {
@@ -697,5 +809,16 @@ const onTransformGesture = {
   top: 50%;
   width: 100%;
   transform: translateY(-50%);
+}
+
+.spinner {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.hide {
+  opacity: 0.0000001;
 }
 </style>

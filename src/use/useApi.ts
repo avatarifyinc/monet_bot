@@ -63,6 +63,16 @@ export type DTOSettings = {
   negative_prompt: string | null;
 };
 
+export type DTOUncrop = {
+  generation_id: string;
+  canvas_width: number;
+  canvas_height: number;
+  image_x: number;
+  image_y: number;
+  image_height: number;
+  image_width: number;
+};
+
 export function useApi() {
   const sdk = useTelegramSdk();
 
@@ -173,12 +183,25 @@ export function useApi() {
     beforeHeaders
   );
 
+  const uncrop = useFetch<void, DTOUncrop>(
+    '/api/v1/generation/uncrop',
+    'POST',
+    beforeHeaders
+  );
+
+  const refreshUrl = useFetch<
+    { generation_id: string | null; url: string | null },
+    { generation_id: string }
+  >('/api/v1/refresh-url/', 'POST', beforeHeaders);
+
   return {
     loadOutfits,
     sendOutfit,
 
     loadSettings,
     saveSettings,
+
+    refreshUrl,
 
     txt2img,
 
@@ -187,5 +210,7 @@ export function useApi() {
     addReplace,
 
     eraser,
+
+    uncrop,
   };
 }

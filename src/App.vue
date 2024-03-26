@@ -2,12 +2,14 @@
   <root>
     <back-button v-if="showBackButton" @on-click="onBackButton" />
 
-    <router-view />
+    <div style="isolation: isolate">
+      <router-view />
+    </div>
   </root>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, provide, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, provide, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 import { BackButton } from '@/telegram/BackButton';
@@ -17,9 +19,11 @@ import { Root } from '@/ui/Root';
 import { noop } from '@/ui/utility/noop';
 
 import { SUBMIT_STATE } from './tokens';
+import { useAlerts } from './ui/use/alerts';
 
-const tg = useTelegramSdk();
+const sdk = useTelegramSdk();
 
+const alertsService = useAlerts();
 const router = useRouter();
 const route = useRoute();
 const theme = useTheme();
@@ -31,8 +35,8 @@ provide(SUBMIT_STATE, submitState);
 onMounted(() => {
   document.body.onclick = noop;
 
-  tg.expand();
-  tg.ready();
+  sdk.expand();
+  sdk.ready();
 });
 
 const showBackButton = computed(() => {
@@ -59,6 +63,22 @@ const setThemeAttribute = (theme: 'dark' | 'light') => {
   document.documentElement.setAttribute('data-theme', theme);
 };
 
+let urlMissTimeout: ReturnType<typeof setTimeout> | null = null;
+let missUrlAlert: string | null = null;
+let autocloseTimeout: ReturnType<typeof setTimeout> | null = null;
+
+onBeforeUnmount(() => {
+  if (urlMissTimeout) {
+    clearTimeout(urlMissTimeout);
+    urlMissTimeout = null;
+  }
+
+  if (autocloseTimeout) {
+    clearTimeout(autocloseTimeout);
+    autocloseTimeout = null;
+  }
+});
+
 watch(theme, setThemeAttribute, { immediate: true });
 watch(
   () => route.query,
@@ -84,6 +104,35 @@ watch(
         ...submitState.value,
         url: `${f}&${q.toString()}`,
       };
+
+      if (urlMissTimeout) {
+        clearTimeout(urlMissTimeout);
+        urlMissTimeout = null;
+
+        if (missUrlAlert) {
+          alertsService.close(missUrlAlert);
+        }
+      }
+    } else {
+      if (urlMissTimeout) {
+        clearTimeout(urlMissTimeout);
+        urlMissTimeout = null;
+
+        if (missUrlAlert) {
+          alertsService.close(missUrlAlert);
+        }
+      }
+
+      urlMissTimeout = setTimeout(() => {
+        missUrlAlert = alertsService.show('Send a picture to use AI Tools', {
+          type: 'error',
+          autoClose: 5000,
+        });
+
+        autocloseTimeout = setTimeout(() => {
+          sdk.close();
+        }, 5000);
+      }, 1000);
     }
   },
   { immediate: true }
