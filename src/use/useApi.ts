@@ -78,7 +78,7 @@ export function useApi() {
 
   const beforeHeaders = () => {
     return {
-      'X-TG-INIT-DATA': sdk.initData,
+      'X-TG-INIT-DATA': sdk.initData || import.meta.env.VITE_INIT_DATA,
     };
   };
 
