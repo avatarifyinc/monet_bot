@@ -194,6 +194,12 @@ export function useApi() {
     { generation_id: string }
   >('/api/v1/refresh-url/', 'POST', beforeHeaders);
 
+  const askForImage = useFetch(
+    '/api/v1/generation/ask-for-image',
+    'POST',
+    beforeHeaders
+  );
+
   return {
     loadOutfits,
     sendOutfit,
@@ -212,5 +218,7 @@ export function useApi() {
     eraser,
 
     uncrop,
+
+    askForImage,
   };
 }
