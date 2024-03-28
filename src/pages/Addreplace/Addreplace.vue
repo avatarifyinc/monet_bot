@@ -17,8 +17,14 @@ import { ZoomDirective as vZoom } from '@/zoom-rotate-transform/zoom';
 import SettingsPopup from './SettingsPopup.vue';
 import { useState } from './useState';
 
-const { stack, undoIndex, getPromptFromLs, setPromptToLs, pushStackToLs } =
-  useState();
+const {
+  stack,
+  undoIndex,
+  getPromptFromLs,
+  setPromptToLs,
+  pushStackToLs,
+  getFromLs,
+} = useState();
 const sdk = useTelegramSdk();
 const alertsService = useAlerts({ autoCloseOnUnmount: true });
 const api = useApi();
@@ -47,10 +53,6 @@ watch(inputValue, (value) => {
     value || ''
   );
 });
-
-// watch([stack, undoIndex], ([_, index]) => {
-//   pushStackToLs((submitState.value?.generation_id as string) || '', index);
-// });
 
 const release = ref(false);
 
@@ -130,6 +132,15 @@ const activeTool = ref<'draw' | 'eraser' | 'selection'>('draw');
 const drawingAreaRef = ref<HTMLElement | null>(null);
 const loadedImage = ref<HTMLImageElement | null>(null);
 const loadingImage = ref(false);
+
+const saveMaskToLs = () => {
+  const _state = submitState.value;
+  const _url = sideCanvasRef.value?.toDataURL();
+
+  if (_state?.generation_id && _url) {
+    pushStackToLs(_state.generation_id as string, _url);
+  }
+};
 
 watch(
   submitState,
@@ -221,9 +232,32 @@ const drawImageBackgroundOnCanvas = ([wh, canvas]: [
       return;
     }
 
-    const _data = stack.value[undoIndex.value - 1];
+    const url = getFromLs((submitState.value?.generation_id as string) || '');
 
-    clearCanvasAndDraw(_canvas, _data);
+    if (url) {
+      const _img = new Image();
+
+      _img.onload = () => {
+        _ctx.drawImage(_img, 0, 0, _canvas.width / pr, _canvas.height / pr);
+
+        const _data = _ctx.getImageData(0, 0, _canvas.width, _canvas.height);
+
+        stack.value = [_data];
+        undoIndex.value = 1;
+      };
+
+      _img.onerror = () => {
+        const _data = stack.value[undoIndex.value - 1];
+
+        clearCanvasAndDraw(_canvas, _data);
+      };
+
+      _img.src = url;
+    } else {
+      const _data = stack.value[undoIndex.value - 1];
+
+      clearCanvasAndDraw(_canvas, _data);
+    }
   }
 };
 
@@ -390,9 +424,13 @@ const setup = (
     const _ctx = el.getContext('2d');
 
     if (_ctx) {
-      stack.value.push(_ctx.getImageData(0, 0, el.width, el.height));
+      const a = stack.value;
+
+      stack.value = a.concat(_ctx.getImageData(0, 0, el.width, el.height));
 
       undoIndex.value += 1;
+
+      saveMaskToLs();
     }
   }
 
@@ -466,6 +504,8 @@ const undoRedo = (step: number) => {
   const _data = stack.value[undoIndex.value - 1];
 
   clearCanvasAndDraw(_canvas, _data);
+
+  saveMaskToLs();
 };
 
 const onInvert = () => {
@@ -497,6 +537,8 @@ const onInvert = () => {
   undoIndex.value += 1;
 
   ctx.putImageData(imageData, 0, 0);
+
+  saveMaskToLs();
 };
 
 const onAction = (
@@ -516,6 +558,8 @@ const onAction = (
     stack.value = [];
     undoIndex.value = 0;
     activeTool.value = 'draw';
+
+    saveMaskToLs();
   }
 };
 

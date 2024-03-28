@@ -15,7 +15,7 @@ import { ZoomDirective as vZoom } from '@/zoom-rotate-transform/zoom';
 
 import { useState } from './useState';
 
-const { stack, undoIndex } = useState();
+const { stack, undoIndex, pushStackToLs, getFromLs } = useState();
 const sdk = useTelegramSdk();
 const alertsService = useAlerts({ autoCloseOnUnmount: true });
 const api = useApi();
@@ -44,6 +44,15 @@ const zoomStyle = computed(() => {
     transform: `translate(${_matrix.translate.x}px, ${_matrix.translate.y}px) scale(${_matrix.scale})`,
   } as any;
 });
+
+const saveMaskToLs = () => {
+  const _state = submitState.value;
+  const _url = sideCanvasRef.value?.toDataURL();
+
+  if (_state?.generation_id && _url) {
+    pushStackToLs(_state.generation_id as string, _url);
+  }
+};
 
 const toolsGroups = [
   [
@@ -200,9 +209,32 @@ const drawImageBackgroundOnCanvas = ([wh, canvas]: [
       return;
     }
 
-    const _data = stack.value[undoIndex.value - 1];
+    const url = getFromLs((submitState.value?.generation_id as string) || '');
 
-    clearCanvasAndDraw(_canvas, _data);
+    if (url) {
+      const _img = new Image();
+
+      _img.onload = () => {
+        _ctx.drawImage(_img, 0, 0, _canvas.width / pr, _canvas.height / pr);
+
+        const _data = _ctx.getImageData(0, 0, _canvas.width, _canvas.height);
+
+        stack.value = [_data];
+        undoIndex.value = 1;
+      };
+
+      _img.onerror = () => {
+        const _data = stack.value[undoIndex.value - 1];
+
+        clearCanvasAndDraw(_canvas, _data);
+      };
+
+      _img.src = url;
+    } else {
+      const _data = stack.value[undoIndex.value - 1];
+
+      clearCanvasAndDraw(_canvas, _data);
+    }
   }
 };
 
@@ -369,9 +401,13 @@ const setup = (
     const _ctx = el.getContext('2d');
 
     if (_ctx) {
-      stack.value.push(_ctx.getImageData(0, 0, el.width, el.height));
+      const a = stack.value;
+
+      stack.value = a.concat(_ctx.getImageData(0, 0, el.width, el.height));
 
       undoIndex.value += 1;
+
+      saveMaskToLs();
     }
   }
 
@@ -445,6 +481,8 @@ const undoRedo = (step: number) => {
   const _data = stack.value[undoIndex.value - 1];
 
   clearCanvasAndDraw(_canvas, _data);
+
+  saveMaskToLs();
 };
 
 const onInvert = () => {
@@ -476,6 +514,8 @@ const onInvert = () => {
   undoIndex.value += 1;
 
   ctx.putImageData(imageData, 0, 0);
+
+  saveMaskToLs();
 };
 
 const onAction = (
@@ -495,6 +535,8 @@ const onAction = (
     stack.value = [];
     undoIndex.value = 0;
     activeTool.value = 'draw';
+
+    saveMaskToLs();
   }
 };
 
