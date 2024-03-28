@@ -93,6 +93,13 @@ watch(
       };
     }
 
+    if (typeof value.mask_generation_id === 'string') {
+      submitState.value = {
+        ...submitState.value,
+        mask_generation_id: value.mask_generation_id,
+      };
+    }
+
     if (typeof value.url === 'string') {
       const f = value.url;
       const q = new URLSearchParams();
