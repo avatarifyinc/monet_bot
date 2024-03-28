@@ -232,7 +232,9 @@ const drawImageBackgroundOnCanvas = ([wh, canvas]: [
       return;
     }
 
-    const url = getFromLs((submitState.value?.generation_id as string) || '');
+    const url =
+      getFromLs((submitState.value?.generation_id as string) || '') ||
+      getFromLs((submitState.value?.mask_generation_id as string) || '');
 
     if (url) {
       const _img = new Image();

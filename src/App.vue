@@ -12,6 +12,7 @@
 import { computed, onBeforeUnmount, onMounted, provide, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
+import { MissUrlErrorAlert } from '@/components/MissUrlErrorAlert';
 import { BackButton } from '@/telegram/BackButton';
 import { useTelegramSdk } from '@/telegram/use/sdk';
 import { useTheme } from '@/telegram/use/theme';
@@ -20,9 +21,11 @@ import { noop } from '@/ui/utility/noop';
 
 import { SUBMIT_STATE } from './tokens';
 import { useAlerts } from './ui/use/alerts';
+import { useApi } from './use/useApi';
 
 const sdk = useTelegramSdk();
 
+const api = useApi();
 const alertsService = useAlerts();
 const router = useRouter();
 const route = useRoute();
@@ -90,6 +93,13 @@ watch(
       };
     }
 
+    if (typeof value.mask_generation_id === 'string') {
+      submitState.value = {
+        ...submitState.value,
+        mask_generation_id: value.mask_generation_id,
+      };
+    }
+
     if (typeof value.url === 'string') {
       const f = value.url;
       const q = new URLSearchParams();
@@ -124,13 +134,31 @@ watch(
       }
 
       urlMissTimeout = setTimeout(() => {
-        missUrlAlert = alertsService.show('Send a picture to use AI Tools', {
+        missUrlAlert = alertsService.show(MissUrlErrorAlert, {
           type: 'error',
           autoClose: 5000,
+          onClose: () => {
+            if (autocloseTimeout) {
+              clearTimeout(autocloseTimeout);
+              autocloseTimeout = null;
+            }
+
+            api.askForImage
+              .execute()
+              .catch(() => null)
+              .finally(() => {
+                sdk.close();
+              });
+          },
         });
 
         autocloseTimeout = setTimeout(() => {
-          sdk.close();
+          api.askForImage
+            .execute()
+            .catch(() => null)
+            .finally(() => {
+              sdk.close();
+            });
         }, 5000);
       }, 1000);
     }
