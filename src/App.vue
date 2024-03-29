@@ -133,6 +133,10 @@ watch(
         }
       }
 
+      if (!import.meta.env.PROD) {
+        return;
+      }
+
       urlMissTimeout = setTimeout(() => {
         missUrlAlert = alertsService.show(MissUrlErrorAlert, {
           type: 'error',

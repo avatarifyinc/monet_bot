@@ -103,12 +103,29 @@ import { useApi } from '@/use/useApi';
 import { TransformDirective as vTransform } from '@/zoom-rotate-transform/transform';
 
 import Resizer from './Resizer.vue';
+import { validatedParams } from './validatedParams';
 
 const sdk = useTelegramSdk();
 const alertsService = useAlerts({ autoCloseOnUnmount: true });
 const api = useApi();
 
 const submitState = inject(SUBMIT_STATE)!;
+
+const toLSId = (id: string) => {
+  return `__monet_${id}_uncrop`;
+};
+
+const getUncropProp = () => {
+  const _state = submitState.value;
+  const _mask_id = (_state?.mask_generation_id as string) || '';
+  const _generation_id = (_state?.generation_id as string) || '';
+
+  const params =
+    localStorage.getItem(toLSId(_mask_id)) ||
+    localStorage.getItem(toLSId(_generation_id));
+
+  return validatedParams(params);
+};
 
 const areaRef = ref<HTMLElement | null>(null);
 const imageRef = ref<HTMLImageElement | null>(null);
@@ -216,39 +233,6 @@ const sizes = computed(() => {
 const active = ref<Ratio>(sizes.value[0][0]);
 const rotated = ref(false);
 
-watch(
-  submitState,
-  (value) => {
-    if (value && value.url) {
-      loadingImage.value = true;
-
-      const _img = new Image();
-
-      _img.onload = () => {
-        loadedImage.value = _img;
-        loadingImage.value = false;
-
-        console.log('img width height', _img.width, _img.height);
-      };
-
-      _img.onerror = () => {
-        alertsService.show(ImageLoadErrorAlert, {
-          type: 'error',
-          data: {
-            generation_id: submitState.value?.generation_id || '',
-          },
-          autoClose: false,
-        });
-
-        loadingImage.value = false;
-      };
-
-      _img.src = value.url as string;
-    }
-  },
-  { immediate: true }
-);
-
 const ima = computed(() => {
   const _image = loadedImage.value;
 
@@ -287,7 +271,9 @@ watch(
   ima,
   (value) => {
     if (value) {
-      active.value = sizes.value[0][0];
+      if (toStyle.value.width && toStyle.value.height) {
+        return;
+      }
 
       setTimeout(() => {
         refit.value = Date.now();
@@ -313,10 +299,34 @@ const toStyle = ref<ToStyle>({
   ratio: 1,
 });
 
+watch([toStyle, active, rotated], ([_toStyle, _active, _rotated]) => {
+  const _state = submitState.value;
+  const _generation_id = (_state?.generation_id as string) || '';
+  const value = {
+    img: _toStyle,
+    active: _active.label,
+    rotated: _rotated,
+  };
+
+  if (_generation_id) {
+    localStorage.setItem(toLSId(_generation_id), JSON.stringify(value));
+  }
+});
+
+let initialized = false;
+
 watch(
   fitted,
   (value) => {
     if (value) {
+      if (!initialized && toStyle.value.width && toStyle.value.height) {
+        initialized = true;
+
+        return;
+      }
+
+      initialized = true;
+
       toStyle.value = {
         left: (value.maxWidth - value.width) / 2,
         top: (value.maxHeight - value.height) / 2,
@@ -503,6 +513,51 @@ const onPan = ([dx, dy]: [number, number]) => {
 
   toStyle.value = clampUpdatedStyle(r.s);
 };
+
+watch(
+  submitState,
+  (value) => {
+    if (value && value.url) {
+      const uncropProps = getUncropProp();
+
+      sizes.value.forEach((item) => {
+        item.forEach((_ratio) => {
+          if (_ratio.label === uncropProps.active) {
+            active.value = _ratio;
+          }
+        });
+      });
+
+      rotated.value = uncropProps.rotated;
+
+      toStyle.value = uncropProps.img;
+
+      loadingImage.value = true;
+
+      const _img = new Image();
+
+      _img.onload = () => {
+        loadedImage.value = _img;
+        loadingImage.value = false;
+      };
+
+      _img.onerror = () => {
+        alertsService.show(ImageLoadErrorAlert, {
+          type: 'error',
+          data: {
+            generation_id: submitState.value?.generation_id || '',
+          },
+          autoClose: false,
+        });
+
+        loadingImage.value = false;
+      };
+
+      _img.src = value.url as string;
+    }
+  },
+  { immediate: true }
+);
 
 watch([verticalAlignment, horizontalAligment], ([a, b]) => {
   if (a || b) {
