@@ -117,12 +117,9 @@ const toLSId = (id: string) => {
 
 const getUncropProp = () => {
   const _state = submitState.value;
-  const _mask_id = (_state?.mask_generation_id as string) || '';
   const _generation_id = (_state?.generation_id as string) || '';
 
-  const params =
-    localStorage.getItem(toLSId(_mask_id)) ||
-    localStorage.getItem(toLSId(_generation_id));
+  const params = localStorage.getItem(toLSId(_generation_id));
 
   return validatedParams(params);
 };
