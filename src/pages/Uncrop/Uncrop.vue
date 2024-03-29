@@ -89,7 +89,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject, ref, watch } from 'vue';
+import { computed, inject, onMounted, ref, watch } from 'vue';
 
 import { ImageLoadErrorAlert } from '@/components/ImageLoadErrorAlert';
 import { MainButton } from '@/telegram/MainButton';
@@ -518,20 +518,6 @@ watch(
   submitState,
   (value) => {
     if (value && value.url) {
-      const uncropProps = getUncropProp();
-
-      sizes.value.forEach((item) => {
-        item.forEach((_ratio) => {
-          if (_ratio.label === uncropProps.active) {
-            active.value = _ratio;
-          }
-        });
-      });
-
-      rotated.value = uncropProps.rotated;
-
-      toStyle.value = uncropProps.img;
-
       loadingImage.value = true;
 
       const _img = new Image();
@@ -574,6 +560,22 @@ const onTransformGesture = {
     }
   },
 };
+
+onMounted(() => {
+  const uncropProps = getUncropProp();
+
+  sizes.value.forEach((item) => {
+    item.forEach((_ratio) => {
+      if (_ratio.label === uncropProps.active) {
+        active.value = _ratio;
+      }
+    });
+  });
+
+  rotated.value = uncropProps.rotated;
+
+  toStyle.value = uncropProps.img;
+});
 
 const onSubmit = () => {
   const _image = imageRef.value?.getBoundingClientRect();
