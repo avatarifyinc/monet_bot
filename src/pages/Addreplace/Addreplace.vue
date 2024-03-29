@@ -38,7 +38,9 @@ const forceInsert = ref(false);
 const negativePrompt = ref('');
 
 const inputValue = ref(
-  getPromptFromLs((submitState.value?.generation_id as string) || '')
+  getPromptFromLs((submitState.value?.mask_generation_id as string) || '') ||
+    getPromptFromLs((submitState.value?.generation_id as string) || '') ||
+    ''
 );
 const canvasRef = ref<HTMLCanvasElement | null>(null);
 const matrix = ref({
@@ -233,8 +235,8 @@ const drawImageBackgroundOnCanvas = ([wh, canvas]: [
     }
 
     const url =
-      getFromLs((submitState.value?.generation_id as string) || '') ||
-      getFromLs((submitState.value?.mask_generation_id as string) || '');
+      getFromLs((submitState.value?.mask_generation_id as string) || '') ||
+      getFromLs((submitState.value?.generation_id as string) || '');
 
     if (url) {
       const _img = new Image();
